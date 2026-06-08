@@ -823,3 +823,4 @@ async function compressFile(file) {
 function splitLines(s) { return String(s || "").split("\n").map(x => x.trim()).filter(Boolean); }
 function splitTags(s) { return String(s || "").split(",").map(x => x.trim()).filter(Boolean); }
 function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+function escapeAttr(s) { return escapeHtml(s); }
