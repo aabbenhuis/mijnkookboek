@@ -46,9 +46,9 @@ function render() {
                 <p class="hint">Verschijnt straks op je PDF cover en bij gedeelde links.</p>
               </div>
               <div class="field">
-                <label>Voorkeur kookstijl</label>
+                <label>Jouw favoriete kok</label>
                 <select name="defaultCookStyle" id="default-cook-style"></select>
-                <p class="hint">Standaard stijl bij nieuwe AI gegenereerde recepten. Per recept te overrulen.</p>
+                <p class="hint">Jouw voorkeur, opgeslagen in je profiel. Bij nieuwe AI gegenereerde recepten staat deze standaard ingevuld. Je kunt per recept iets anders kiezen.</p>
               </div>
               <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Bewaar profiel</button>
@@ -107,6 +107,19 @@ function render() {
             <div class="form-actions">
               <button class="btn btn-secondary" id="btn-logout">Uitloggen</button>
             </div>
+          </div>
+
+          <div class="card-feature">
+            <h2 style="font-size: 22px; margin: 0 0 16px;">Juridisch</h2>
+            <p style="margin-bottom: 12px;">
+              <a href="voorwaarden.html" target="_blank" class="btn-link">Algemene voorwaarden</a>
+            </p>
+            <p style="margin-bottom: 12px;">
+              <a href="privacy.html" target="_blank" class="btn-link">Privacyverklaring</a>
+            </p>
+            <p style="margin: 0;">
+              <a href="mailto:info@mijndigitaalkookboek.nl" class="btn-link">Contact: info@mijndigitaalkookboek.nl</a>
+            </p>
           </div>
 
         </div>

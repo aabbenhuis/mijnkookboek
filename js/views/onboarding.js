@@ -92,8 +92,8 @@ function renderStep2(target) {
   target.innerHTML = `
     <div class="auth-header" style="margin-bottom: var(--s-xl);">
       <div class="brand-mark">K</div>
-      <h1>Hoe wil je het liefst koken?</h1>
-      <p>Kies een kok als signatuur. Hij of zij bepaalt straks welke ingredienten en technieken voorkomen in de recepten die AI voor je maakt. Je kunt dit altijd later wijzigen of per recept iets anders kiezen.</p>
+      <h1>Wie is jouw favoriete kok?</h1>
+      <p>We slaan jouw voorkeur op zodat we recepten kunnen matchen met de smaken die jij lekker vindt. Je kunt dit altijd later wijzigen.</p>
     </div>
 
     <form id="form-step2" class="stack">

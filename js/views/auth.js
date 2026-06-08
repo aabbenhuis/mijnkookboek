@@ -72,6 +72,22 @@ function render() {
             <button type="button" data-mode="signup">Maak er een aan</button>
           `}
         </div>
+
+        ${isSignup ? `
+          <p class="auth-legal">
+            Door een account aan te maken ga je akkoord met onze
+            <a href="voorwaarden.html" target="_blank">algemene voorwaarden</a>
+            en <a href="privacy.html" target="_blank">privacyverklaring</a>.
+          </p>
+        ` : ""}
+
+        <p class="auth-footer-links">
+          <a href="voorwaarden.html" target="_blank">Voorwaarden</a>
+          <span>·</span>
+          <a href="privacy.html" target="_blank">Privacy</a>
+          <span>·</span>
+          <a href="mailto:info@mijndigitaalkookboek.nl">Contact</a>
+        </p>
       </div>
     </div>
   `;

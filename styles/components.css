@@ -687,6 +687,25 @@ button.credit-pill:hover { background: var(--card-tint-yellow); }
 }
 .auth-switch button:hover { text-decoration: underline; }
 
+.auth-legal {
+  text-align: center;
+  margin-top: var(--s-md);
+  font-size: 12px;
+  color: var(--steel);
+  line-height: 1.5;
+}
+.auth-legal a { color: var(--primary); text-decoration: underline; }
+
+.auth-footer-links {
+  text-align: center;
+  margin-top: var(--s-xl);
+  font-size: 12px;
+  color: var(--steel);
+}
+.auth-footer-links a { color: var(--steel); text-decoration: none; }
+.auth-footer-links a:hover { color: var(--ink); text-decoration: underline; }
+.auth-footer-links span { margin: 0 6px; opacity: 0.5; }
+
 /* ===== Pill tabs ===== */
 .pill-tabs { display: flex; gap: var(--s-xs); margin-bottom: var(--s-xxl); flex-wrap: wrap; }
 .pill-tab {
