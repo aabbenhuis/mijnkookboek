@@ -114,6 +114,16 @@ function renderList(firstName, count) {
               <option value="60">Onder een uur</option>
             </select>
           </div>
+          <div class="filters-section">
+            <h4>Beoordeling</h4>
+            <select id="filter-rating" class="search-input">
+              <option value="">Alle recepten</option>
+              <option value="5">Alleen 5 sterren</option>
+              <option value="4">Vier sterren of meer</option>
+              <option value="3">Drie sterren of meer</option>
+              <option value="1">Alleen beoordeelde recepten</option>
+            </select>
+          </div>
           <div class="form-actions">
             <button class="btn btn-secondary" id="btn-reset-filters">Wis alle filters</button>
             <button class="btn btn-primary" id="btn-apply-filters">Pas filters toe</button>
@@ -143,6 +153,8 @@ function renderList(firstName, count) {
     document.getElementById("filter-meal").value = "";
     document.getElementById("filter-style").value = "";
     document.getElementById("filter-time").value = "";
+    const rating = document.getElementById("filter-rating");
+    if (rating) rating.value = "";
     document.querySelectorAll("input[name='filter-diet']").forEach(cb => cb.checked = false);
     document.getElementById("search-input").value = "";
     applyFilter();
@@ -191,12 +203,16 @@ function applyFilter() {
   const mealFilter = document.getElementById("filter-meal")?.value || "";
   const styleFilter = document.getElementById("filter-style")?.value || "";
   const timeFilter = Number(document.getElementById("filter-time")?.value || 0);
+  const ratingFilter = Number(document.getElementById("filter-rating")?.value || 0);
   const dietFilters = Array.from(document.querySelectorAll("input[name='filter-diet']:checked")).map(cb => cb.value);
 
   const filtered = recipes.filter(r => {
     if (mealFilter && r.meal_type !== mealFilter) return false;
     if (styleFilter && (r.cook_style || "neutraal") !== styleFilter) return false;
     if (timeFilter > 0 && (!r.cook_time || r.cook_time > timeFilter)) return false;
+    if (ratingFilter > 0) {
+      if (!r.rating || r.rating < ratingFilter) return false;
+    }
     if (dietFilters.length > 0) {
       const recipeDiets = r.diet || [];
       const matchesAll = dietFilters.every(df => recipeDiets.includes(df));
@@ -207,7 +223,7 @@ function applyFilter() {
     return hay.includes(q);
   });
 
-  renderActiveFilters({ mealFilter, styleFilter, timeFilter, dietFilters, q });
+  renderActiveFilters({ mealFilter, styleFilter, timeFilter, ratingFilter, dietFilters, q });
 
   const grid = document.getElementById("recipe-grid");
   if (!grid) return;
@@ -217,7 +233,7 @@ function applyFilter() {
   });
 }
 
-function renderActiveFilters({ mealFilter, styleFilter, timeFilter, dietFilters, q }) {
+function renderActiveFilters({ mealFilter, styleFilter, timeFilter, ratingFilter, dietFilters, q }) {
   const el = document.getElementById("active-filters");
   if (!el) return;
   const chips = [];
@@ -228,6 +244,10 @@ function renderActiveFilters({ mealFilter, styleFilter, timeFilter, dietFilters,
     chips.push({ label: cs?.label || styleFilter, type: "style" });
   }
   if (timeFilter) chips.push({ label: `Onder ${timeFilter} min`, type: "time" });
+  if (ratingFilter) {
+    const lbl = ratingFilter === 1 ? "Beoordeeld" : `${ratingFilter} sterren of meer`;
+    chips.push({ label: lbl, type: "rating" });
+  }
   dietFilters.forEach(df => {
     const d = getDiet(df);
     chips.push({ label: d?.label || df, type: "diet", value: df });
@@ -247,6 +267,7 @@ function renderActiveFilters({ mealFilter, styleFilter, timeFilter, dietFilters,
       else if (type === "meal") document.getElementById("filter-meal").value = "";
       else if (type === "style") document.getElementById("filter-style").value = "";
       else if (type === "time") document.getElementById("filter-time").value = "";
+      else if (type === "rating") { const r = document.getElementById("filter-rating"); if (r) r.value = ""; }
       else if (type === "diet") {
         const val = chip.dataset.filterValue;
         const cb = document.querySelector(`input[name='filter-diet'][value='${val}']`);
@@ -289,6 +310,11 @@ function recipeCardHtml(r) {
     ? `<div class="card-tags-subtle">${r.tags.slice(0, 4).map(t => `<span>${escapeHtml(t)}</span>`).join("")}</div>`
     : "";
 
+  // Rating sterren
+  const ratingLine = (r.rating && r.rating > 0)
+    ? `<div class="card-rating-row">${renderSmallStars(r.rating)}</div>`
+    : "";
+
   return `
     <div class="recipe-card" data-recipe-id="${r.id}">
       <div class="recipe-image ${photoUrl ? "" : "placeholder"}" ${photoUrl ? `style="background-image:url('${photoUrl}')"` : ""}>
@@ -297,12 +323,23 @@ function recipeCardHtml(r) {
       <div class="recipe-body">
         <h3 class="recipe-title">${escapeHtml(r.title)}</h3>
         ${styleBadge}
+        ${ratingLine}
         ${metaLine}
         ${dietBadges}
         ${tagsLine}
       </div>
     </div>
   `;
+}
+
+function renderSmallStars(value) {
+  let html = `<div class="rating-stars">`;
+  for (let i = 1; i <= 5; i++) {
+    const filled = i <= value ? "filled" : "";
+    html += `<span class="star ${filled}"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>`;
+  }
+  html += `</div>`;
+  return html;
 }
 
 function escapeHtml(s) {

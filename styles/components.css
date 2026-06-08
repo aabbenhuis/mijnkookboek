@@ -850,3 +850,149 @@ button.credit-pill:hover { background: var(--card-tint-yellow); }
   .hero h1 { font-size: 30px; }
   .page-head h1 { font-size: 24px; }
 }
+
+/* ===== Rating sterren ===== */
+.rating-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.rating-stars.interactive .star { cursor: pointer; }
+.rating-stars .star {
+  width: 22px;
+  height: 22px;
+  color: var(--hairline-strong);
+  transition: color 120ms ease, transform 120ms ease;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.rating-stars .star.filled { color: #f5a623; }
+.rating-stars.interactive .star:hover { transform: scale(1.1); }
+.rating-stars-label {
+  font-size: 13px;
+  color: var(--steel);
+  margin-left: 8px;
+}
+.card-rating-row {
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+}
+.card-rating-row .star {
+  width: 14px;
+  height: 14px;
+}
+
+/* ===== Persoonlijke notitie ===== */
+.personal-notes-block {
+  background: var(--card-tint-yellow-bold);
+  border-radius: var(--r-md);
+  padding: 16px 18px;
+  margin-top: 20px;
+}
+.personal-notes-block h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: var(--charcoal);
+}
+.personal-notes-block p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--charcoal);
+  white-space: pre-wrap;
+}
+.personal-notes-block textarea {
+  width: 100%;
+  min-height: 90px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.6);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  font: inherit;
+  resize: vertical;
+}
+.personal-notes-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  justify-content: flex-end;
+}
+
+/* ===== Detail acties (Bewerk, Deel, Verwijder) ===== */
+.recipe-detail-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn-icon-only {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--steel);
+  border: 1px solid var(--hairline);
+}
+.btn-icon-only:hover { background: var(--surface); color: var(--ink); }
+.btn-icon-only.danger { color: var(--steel); }
+.btn-icon-only.danger:hover { background: #fef2f2; color: var(--error); border-color: #fecaca; }
+
+/* ===== Kleine kaarten ===== */
+.card-small {
+  background: var(--canvas);
+  border-radius: var(--r-md);
+  padding: var(--s-lg);
+  border: 1px solid var(--hairline);
+}
+.card-small h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.card-small p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--slate);
+}
+
+/* ===== Share modal notitie toggle ===== */
+.share-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border-radius: var(--r-sm);
+  margin: 14px 0;
+}
+.share-toggle-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  flex-shrink: 0;
+}
+.share-toggle-row label {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .recipe-detail-actions .btn-secondary,
+  .recipe-detail-actions .btn-danger { display: none; }
+  .recipe-detail-actions .btn-icon-only { display: inline-flex; }
+}
+@media (min-width: 761px) {
+  .recipe-detail-actions .btn-icon-only { display: none; }
+}
+

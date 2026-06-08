@@ -11,9 +11,12 @@ import { getDiet } from "../data/categories.js";
 let containerEl = null;
 let shareData = null;
 
+let includeNotes = false;
+
 export async function mount(container, params) {
   containerEl = container;
   const slug = params?.slug;
+  includeNotes = !!params?.includeNotes;
   if (!slug) {
     showError("Geen geldige deellink");
     return;
@@ -91,7 +94,9 @@ function renderRecipeShare(r, owner) {
               ` : ""}
 
               <h1>${escapeHtml(r.title)}</h1>
-              <p style="color: var(--slate); margin: 0 0 16px; font-size: 18px;">${escapeHtml(r.description || "")}</p>
+              <p style="color: var(--slate); margin: 0 0 12px; font-size: 18px;">${escapeHtml(r.description || "")}</p>
+
+              ${r.rating ? `<div style="margin: 0 0 20px;">${renderSharedStars(r.rating, owner.firstName)}</div>` : ""}
 
               <div class="recipe-meta-row">
                 ${r.cook_time ? `<span class="meta-pill">${r.cook_time} min</span>` : ""}
@@ -122,6 +127,13 @@ function renderRecipeShare(r, owner) {
               </div>
 
               ${r.tips ? `<div class="recipe-section"><h2>Tip</h2><p>${escapeHtml(r.tips)}</p></div>` : ""}
+
+              ${includeNotes && r.personal_notes && r.personal_notes.trim() ? `
+                <div class="personal-notes-block">
+                  <h3>Notitie van ${escapeHtml(owner.firstName)}</h3>
+                  <p>${escapeHtml(r.personal_notes)}</p>
+                </div>
+              ` : ""}
 
               ${r.nutrition ? `
                 <div class="recipe-section">
@@ -185,6 +197,7 @@ function renderCookbookShare(recipes, owner) {
                   <div class="recipe-body">
                     <h3 class="recipe-title">${escapeHtml(r.title)}</h3>
                     ${displayStyle ? `<div class="card-style-line"><span class="card-style-text">In de stijl van ${escapeHtml(displayStyle.primary)}</span></div>` : ""}
+                    ${r.rating ? `<div class="card-rating-row">${renderSmallStarsLocal(r.rating)}</div>` : ""}
                     <div class="card-meta-line">
                       ${r.cook_time ? `${r.cook_time} min · ` : ""}
                       ${r.meal_type || ""}
@@ -204,6 +217,26 @@ function renderCookbookShare(recipes, owner) {
       </section>
     </div>
   `;
+}
+
+function renderSmallStarsLocal(value) {
+  let html = `<div class="rating-stars">`;
+  for (let i = 1; i <= 5; i++) {
+    const filled = i <= value ? "filled" : "";
+    html += `<span class="star ${filled}"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function renderSharedStars(value, name) {
+  let html = `<div class="rating-stars">`;
+  for (let i = 1; i <= 5; i++) {
+    const filled = i <= value ? "filled" : "";
+    html += `<span class="star ${filled}"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>`;
+  }
+  html += `</div><span class="rating-stars-label">Beoordeling van ${escapeHtml(name)}</span>`;
+  return html;
 }
 
 function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }

@@ -59,9 +59,19 @@ function render() {
       <div class="container">
         <div class="row between" style="padding: 32px 0 0">
           <button class="btn btn-ghost recipe-detail-back" data-nav="home">Terug naar kookboek</button>
-          <div class="row">
+          <div class="recipe-detail-actions">
+            <button class="btn btn-secondary" id="btn-edit">Bewerk</button>
             <button class="btn btn-secondary" id="btn-share">Deel</button>
             <button class="btn btn-danger" id="btn-delete">Verwijder</button>
+            <button class="btn-icon-only" id="btn-edit-icon" title="Bewerk recept" aria-label="Bewerk">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </button>
+            <button class="btn-icon-only" id="btn-share-icon" title="Deel recept" aria-label="Deel">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </button>
+            <button class="btn-icon-only danger" id="btn-delete-icon" title="Verwijder recept" aria-label="Verwijder">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
           </div>
         </div>
 
@@ -75,7 +85,11 @@ function render() {
           <div>
             ${styleBadge}
             <h1>${escapeHtml(r.title)}</h1>
-            <p style="color: var(--slate); margin: 0 0 16px; font-size: 18px;">${escapeHtml(r.description || "")}</p>
+            <p style="color: var(--slate); margin: 0 0 12px; font-size: 18px;">${escapeHtml(r.description || "")}</p>
+
+            <div style="margin: 0 0 20px;">
+              ${renderRatingStars(r.rating || 0, true)}
+            </div>
 
             <div class="recipe-meta-row">
               ${r.cook_time ? `<span class="meta-pill">${r.cook_time} min</span>` : ""}
@@ -118,6 +132,10 @@ function render() {
 
             ${r.tips ? `<div class="recipe-section"><h2>Tip</h2><p>${escapeHtml(r.tips)}</p></div>` : ""}
 
+            <div id="personal-notes-section">
+              ${renderNotesBlock(r.personal_notes || "")}
+            </div>
+
             <div class="recipe-section" id="nutrition-section">
               <h2>Voedingswaarden per portie</h2>
               ${renderNutritionBlock(r)}
@@ -134,14 +152,129 @@ function render() {
   bindNutritionAction();
   bindPhotoActions();
   bindShareAction();
+  bindEditAction();
+  bindRatingAction();
+  bindNotesAction();
+}
+
+function renderRatingStars(value, interactive) {
+  const cls = interactive ? "rating-stars interactive" : "rating-stars";
+  let html = `<div class="${cls}" data-rating="${value}">`;
+  for (let i = 1; i <= 5; i++) {
+    const filled = i <= value ? "filled" : "";
+    html += `<button type="button" class="star ${filled}" data-star="${i}" aria-label="${i} sterren">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </button>`;
+  }
+  const label = value > 0
+    ? `<span class="rating-stars-label">Jouw beoordeling</span>`
+    : `<span class="rating-stars-label">Geef een beoordeling</span>`;
+  html += `</div>${label}`;
+  return html;
+}
+
+function renderNotesBlock(notes) {
+  if (notes && notes.trim()) {
+    return `
+      <div class="personal-notes-block">
+        <h3>Jouw notitie</h3>
+        <p id="notes-display">${escapeHtml(notes)}</p>
+        <div class="personal-notes-actions">
+          <button class="btn btn-secondary" id="btn-edit-notes">Bewerk notitie</button>
+        </div>
+      </div>
+    `;
+  }
+  return `
+    <div class="personal-notes-block">
+      <h3>Jouw notitie</h3>
+      <p class="muted-text" style="font-style: italic; margin: 0 0 10px;">Nog geen notitie. Schrijf op wat je aanpaste of wat de smaak ervan vond.</p>
+      <button class="btn btn-secondary" id="btn-add-notes">Voeg notitie toe</button>
+    </div>
+  `;
+}
+
+function bindEditAction() {
+  const handler = () => showView("add", { editId: currentRecipe.id });
+  const btn1 = document.getElementById("btn-edit");
+  const btn2 = document.getElementById("btn-edit-icon");
+  if (btn1) btn1.addEventListener("click", handler);
+  if (btn2) btn2.addEventListener("click", handler);
+}
+
+function bindRatingAction() {
+  const container = document.querySelector(".rating-stars.interactive");
+  if (!container) return;
+  container.querySelectorAll(".star").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const value = Number(btn.dataset.star);
+      const current = Number(container.dataset.rating || 0);
+      const newRating = value === current ? null : value;
+      try {
+        await supabaseClient.updateRecipe(currentRecipe.id, { rating: newRating });
+        currentRecipe.rating = newRating;
+        const wrap = container.parentElement;
+        wrap.innerHTML = renderRatingStars(newRating || 0, true);
+        bindRatingAction();
+        toast(newRating ? `Beoordeling: ${newRating} sterren` : "Beoordeling gewist", "success");
+      } catch (err) {
+        toast(err.message || "Beoordelen mislukt", "error");
+      }
+    });
+  });
+}
+
+function bindNotesAction() {
+  const section = document.getElementById("personal-notes-section");
+  if (!section) return;
+
+  const wireEdit = () => {
+    const editBtn = section.querySelector("#btn-edit-notes, #btn-add-notes");
+    if (!editBtn) return;
+    editBtn.addEventListener("click", () => {
+      const currentNotes = currentRecipe.personal_notes || "";
+      section.innerHTML = `
+        <div class="personal-notes-block">
+          <h3>Jouw notitie</h3>
+          <textarea id="notes-input" placeholder="Bijvoorbeeld: vorige keer extra knoflook toegevoegd, mijn kinderen vonden het lekker.">${escapeHtml(currentNotes)}</textarea>
+          <div class="personal-notes-actions">
+            <button class="btn btn-secondary" id="btn-cancel-notes">Annuleer</button>
+            <button class="btn btn-dark" id="btn-save-notes">Bewaar notitie</button>
+          </div>
+        </div>
+      `;
+      document.getElementById("btn-cancel-notes").addEventListener("click", () => {
+        section.innerHTML = renderNotesBlock(currentRecipe.personal_notes || "");
+        wireEdit();
+      });
+      document.getElementById("btn-save-notes").addEventListener("click", async () => {
+        const newNotes = document.getElementById("notes-input").value.trim();
+        try {
+          await supabaseClient.updateRecipe(currentRecipe.id, { personal_notes: newNotes });
+          currentRecipe.personal_notes = newNotes;
+          section.innerHTML = renderNotesBlock(newNotes);
+          wireEdit();
+          toast("Notitie bewaard", "success");
+        } catch (err) {
+          toast(err.message || "Bewaren mislukt", "error");
+        }
+      });
+    });
+  };
+  wireEdit();
 }
 
 function bindShareAction() {
-  const btn = document.getElementById("btn-share");
-  if (!btn) return;
-  btn.addEventListener("click", () => {
-    showShareModal({ scope: "recipe", targetId: currentRecipe.id, title: currentRecipe.title });
+  const handler = () => showShareModal({
+    scope: "recipe",
+    targetId: currentRecipe.id,
+    title: currentRecipe.title,
+    hasNotes: !!(currentRecipe.personal_notes && currentRecipe.personal_notes.trim()),
   });
+  const btn1 = document.getElementById("btn-share");
+  const btn2 = document.getElementById("btn-share-icon");
+  if (btn1) btn1.addEventListener("click", handler);
+  if (btn2) btn2.addEventListener("click", handler);
 }
 
 function renderNutritionBlock(r) {

@@ -52,6 +52,8 @@ create table if not exists public.recipes (
   source text default 'manual',
   language text not null default 'nl',
   is_example boolean not null default false,
+  rating integer check (rating is null or (rating between 1 and 5)),
+  personal_notes text not null default '',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -59,6 +61,7 @@ create table if not exists public.recipes (
 create index if not exists recipes_user_id_idx on public.recipes (user_id);
 create index if not exists recipes_created_at_idx on public.recipes (created_at desc);
 create index if not exists recipes_category_idx on public.recipes (category);
+create index if not exists recipes_rating_idx on public.recipes (rating);
 
 -- ============================================================
 -- BOODSCHAPPENLIJST

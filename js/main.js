@@ -73,7 +73,8 @@ async function init() {
   const params = new URLSearchParams(window.location.search);
   const shareSlug = params.get("share");
   if (shareSlug) {
-    await shareView.mount(appRoot, { slug: shareSlug });
+    const includeNotes = params.get("notes") === "1";
+    await shareView.mount(appRoot, { slug: shareSlug, includeNotes });
     return;
   }
 

@@ -17,37 +17,64 @@ let pendingPhotoDataUrl = null;
 let chatHistory = [];
 let aiPreviewRecipe = null;
 let photoPreviewRecipe = null;
+let editRecipe = null;
 
-export function mount(container, params = {}) {
+export async function mount(container, params = {}) {
   containerEl = container;
   pendingPhotoBlob = null;
   pendingPhotoDataUrl = null;
   chatHistory = [];
   aiPreviewRecipe = null;
   photoPreviewRecipe = null;
-  activeTab = params.tab || "manual";
+  editRecipe = null;
   aiSubTab = "form";
   updateActiveNav("add");
+
+  if (params.editId) {
+    containerEl.innerHTML = `<div class="container" style="padding: 64px 0;"><p class="muted-text text-center">Recept laden...</p></div>`;
+    try {
+      editRecipe = await supabaseClient.getRecipe(params.editId);
+      activeTab = "manual";
+    } catch (err) {
+      toast("Recept laden mislukt", "error");
+      showView("home");
+      return;
+    }
+  } else {
+    activeTab = params.tab || "manual";
+  }
   render();
 }
 
 function render() {
+  const isEdit = !!editRecipe;
+  const heading = isEdit ? "Recept bewerken" : "Nieuw recept";
+  const sub = isEdit
+    ? `Pas '${escapeHtml(editRecipe.title)}' aan en bewaar je wijzigingen.`
+    : "Kies hoe je dit recept wilt maken.";
+  const tabs = isEdit
+    ? ""
+    : `<div class="pill-tabs" id="add-tabs">
+         <button class="pill-tab ${activeTab === "manual" ? "active" : ""}" data-tab="manual">Zelf invullen</button>
+         <button class="pill-tab ${activeTab === "ai" ? "active" : ""}" data-tab="ai">Met AI genereren</button>
+         <button class="pill-tab ${activeTab === "photo" ? "active" : ""}" data-tab="photo">Uit foto inlezen</button>
+       </div>`;
+  const backNav = isEdit ? `detail` : `home`;
+  const backLabel = isEdit ? "Terug naar recept" : "Terug naar kookboek";
+  const backAttr = isEdit ? `data-back-detail` : `data-nav="home"`;
+
   containerEl.innerHTML = `
     <section class="block">
       <div class="container">
         <div class="page-head">
           <div>
-            <h1>Nieuw recept</h1>
-            <p>Kies hoe je dit recept wilt maken.</p>
+            <h1>${heading}</h1>
+            <p>${sub}</p>
           </div>
-          <button class="btn btn-ghost" data-nav="home">Terug naar kookboek</button>
+          <button class="btn btn-ghost" ${backAttr}>${backLabel}</button>
         </div>
 
-        <div class="pill-tabs" id="add-tabs">
-          <button class="pill-tab ${activeTab === "manual" ? "active" : ""}" data-tab="manual">Zelf invullen</button>
-          <button class="pill-tab ${activeTab === "ai" ? "active" : ""}" data-tab="ai">Met AI genereren</button>
-          <button class="pill-tab ${activeTab === "photo" ? "active" : ""}" data-tab="photo">Uit foto inlezen</button>
-        </div>
+        ${tabs}
 
         <div id="tab-content"></div>
       </div>
@@ -61,6 +88,11 @@ function render() {
       renderTabContent();
     });
   });
+
+  const backBtn = containerEl.querySelector("[data-back-detail]");
+  if (backBtn) {
+    backBtn.addEventListener("click", () => showView("detail", { id: editRecipe.id }));
+  }
 
   renderTabContent();
 }
@@ -77,24 +109,38 @@ function renderTabContent() {
 // ============================================================
 
 function renderManualTab(target) {
+  const e = editRecipe || {};
+  const v = (k, def = "") => e[k] != null ? String(e[k]) : def;
+  const arr = (k) => Array.isArray(e[k]) ? e[k] : [];
+  const isEdit = !!editRecipe;
+  const submitLabel = isEdit ? "Bewaar wijzigingen" : "Bewaar recept";
+  const cancelTarget = isEdit ? "detail" : "home";
+
+  const ingredientsText = arr("ingredients").join("\n");
+  const instructionsText = arr("instructions").join("\n");
+  const dishTypeFirst = arr("dish_type")[0] || "";
+  const dietsArr = arr("diet");
+  const tagsText = arr("tags").join(", ");
+  const existingPhoto = v("photo_url");
+
   target.innerHTML = `
     <form id="form-manual" class="form-grid" style="max-width: 720px;">
       <div class="field">
         <label>Titel</label>
-        <input type="text" name="title" required placeholder="Bijvoorbeeld: Bowl met zoete aardappel en tahin" />
+        <input type="text" name="title" required placeholder="Bijvoorbeeld: Bowl met zoete aardappel en tahin" value="${escapeAttr(v("title"))}" />
       </div>
       <div class="field">
         <label>Korte omschrijving</label>
-        <textarea name="description" placeholder="Een paar zinnen waarom je dit recept lekker vindt"></textarea>
+        <textarea name="description" placeholder="Een paar zinnen waarom je dit recept lekker vindt">${escapeHtml(v("description"))}</textarea>
       </div>
       <div class="field-row">
         <div class="field">
           <label>Bereidingstijd in minuten</label>
-          <input type="number" name="cookTime" min="1" value="30" />
+          <input type="number" name="cookTime" min="1" value="${v("cook_time", "30")}" />
         </div>
         <div class="field">
           <label>Aantal porties</label>
-          <input type="number" name="servings" min="1" value="2" />
+          <input type="number" name="servings" min="1" value="${v("servings", "2")}" />
         </div>
       </div>
       <div class="field-row">
@@ -102,7 +148,7 @@ function renderManualTab(target) {
           <label>Maaltijdtype</label>
           <select name="mealType">
             <option value="">Kies een type</option>
-            ${MEAL_TYPES.map(m => `<option value="${m}">${m}</option>`).join("")}
+            ${MEAL_TYPES.map(m => `<option value="${m}" ${v("meal_type") === m ? "selected" : ""}>${m}</option>`).join("")}
           </select>
           <p class="hint">Wanneer eet je het, bijvoorbeeld Avondeten of Lunch.</p>
         </div>
@@ -110,7 +156,7 @@ function renderManualTab(target) {
           <label>Gerechttype (optioneel)</label>
           <select name="dishType">
             <option value="">Geen specifiek type</option>
-            ${DISH_TYPES.map(d => `<option value="${d}">${d}</option>`).join("")}
+            ${DISH_TYPES.map(d => `<option value="${d}" ${dishTypeFirst === d ? "selected" : ""}>${d}</option>`).join("")}
           </select>
           <p class="hint">Wat is het, bijvoorbeeld Bowl of Pasta.</p>
         </div>
@@ -120,7 +166,7 @@ function renderManualTab(target) {
         <div class="diet-grid" id="diet-options">
           ${DIETS.map(d => `
             <label class="diet-option">
-              <input type="checkbox" name="diet" value="${d.key}" />
+              <input type="checkbox" name="diet" value="${d.key}" ${dietsArr.includes(d.key) ? "checked" : ""} />
               <span>${d.icon} ${d.label}</span>
             </label>
           `).join("")}
@@ -128,34 +174,34 @@ function renderManualTab(target) {
       </div>
       <div class="field">
         <label>Tags, gescheiden door komma (optioneel)</label>
-        <input type="text" name="tags" placeholder="snel, comfort, familie" />
+        <input type="text" name="tags" placeholder="snel, comfort, familie" value="${escapeAttr(tagsText)}" />
         <p class="hint">Vrije woorden om later op te kunnen zoeken. Geen dieet of categorie nodig, die zitten al apart.</p>
       </div>
       <div class="field">
         <label>Ingredienten, een per regel</label>
-        <textarea name="ingredients" placeholder="200 g zoete aardappel&#10;1 el tahin" rows="6"></textarea>
+        <textarea name="ingredients" placeholder="200 g zoete aardappel&#10;1 el tahin" rows="6">${escapeHtml(ingredientsText)}</textarea>
       </div>
       <div class="field">
         <label>Bereidingsstappen, een per regel</label>
-        <textarea name="instructions" placeholder="Verwarm de oven voor op 200 graden.&#10;Snijd de zoete aardappel in blokjes." rows="6"></textarea>
+        <textarea name="instructions" placeholder="Verwarm de oven voor op 200 graden.&#10;Snijd de zoete aardappel in blokjes." rows="6">${escapeHtml(instructionsText)}</textarea>
       </div>
       <div class="field">
         <label>Tips (optioneel)</label>
-        <textarea name="tips"></textarea>
+        <textarea name="tips">${escapeHtml(v("tips"))}</textarea>
       </div>
       <div class="field">
         <label>Foto (optioneel)</label>
         <div class="upload-zone" id="manual-upload-zone">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--steel)" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-          <h4>Sleep een foto hierheen of klik om te kiezen</h4>
+          <h4>${isEdit && existingPhoto ? "Vervang de foto" : "Sleep een foto hierheen of klik om te kiezen"}</h4>
           <p>JPG of PNG, maximaal ${PHOTO_MAX_UPLOAD_MB} MB</p>
           <input type="file" accept="image/*" id="manual-file-input" style="display:none" />
-          <img id="manual-preview" class="upload-preview" style="display:none" />
+          <img id="manual-preview" class="upload-preview" style="display:${existingPhoto ? "block" : "none"}" ${existingPhoto ? `src="${escapeAttr(existingPhoto)}"` : ""} />
         </div>
       </div>
       <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Bewaar recept</button>
-        <button type="button" class="btn btn-secondary" data-nav="home">Annuleer</button>
+        <button type="submit" class="btn btn-primary">${submitLabel}</button>
+        <button type="button" class="btn btn-secondary" data-cancel-${cancelTarget}>Annuleer</button>
       </div>
     </form>
   `;
@@ -165,12 +211,20 @@ function renderManualTab(target) {
     pendingPhotoDataUrl = dataUrl;
   });
 
-  document.getElementById("form-manual").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const dietChecked = Array.from(e.target.querySelectorAll("input[name='diet']:checked")).map(cb => cb.value);
+  const cancelBtn = document.querySelector(`[data-cancel-${cancelTarget}]`);
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+      if (isEdit) showView("detail", { id: editRecipe.id });
+      else showView("home");
+    });
+  }
+
+  document.getElementById("form-manual").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const fd = new FormData(ev.target);
+    const dietChecked = Array.from(ev.target.querySelectorAll("input[name='diet']:checked")).map(cb => cb.value);
     const dishType = (fd.get("dishType") || "").trim();
-    await saveRecipeFromForm({
+    const data = {
       title: (fd.get("title") || "").trim(),
       description: (fd.get("description") || "").trim(),
       cook_time: Number(fd.get("cookTime")) || null,
@@ -182,10 +236,43 @@ function renderManualTab(target) {
       ingredients: splitLines(fd.get("ingredients")),
       instructions: splitLines(fd.get("instructions")),
       tips: (fd.get("tips") || "").trim(),
-      source: "manual",
-      cook_style: "neutraal",
-    }, pendingPhotoBlob, e.target.querySelector("button[type='submit']"));
+    };
+    if (isEdit) {
+      await updateExistingRecipe(data, pendingPhotoBlob, ev.target.querySelector("button[type='submit']"));
+    } else {
+      data.source = "manual";
+      data.cook_style = "neutraal";
+      await saveRecipeFromForm(data, pendingPhotoBlob, ev.target.querySelector("button[type='submit']"));
+    }
   });
+}
+
+async function updateExistingRecipe(data, photoBlob, submitBtn) {
+  if (!data.title?.trim()) { toast("Vul minstens een titel in", "error"); return; }
+  const orig = submitBtn?.innerHTML;
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span> Bezig...';
+  }
+  try {
+    await supabaseClient.updateRecipe(editRecipe.id, data);
+    if (photoBlob) {
+      try {
+        const photoUrl = await supabaseClient.uploadRecipePhoto(editRecipe.id, photoBlob, "jpg");
+        await supabaseClient.updateRecipe(editRecipe.id, { photo_url: photoUrl });
+      } catch {
+        toast("Recept bewaard, maar foto uploaden mislukte", "error");
+      }
+    }
+    toast("Wijzigingen bewaard", "success");
+    showView("detail", { id: editRecipe.id });
+  } catch (err) {
+    toast(err.message || "Bewaren mislukt", "error");
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = orig;
+    }
+  }
 }
 
 // ============================================================
