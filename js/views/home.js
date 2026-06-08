@@ -41,6 +41,7 @@ function render() {
 }
 
 function renderEmpty(firstName) {
+  const cookbookName = STATE.profile?.cookbook_name || "Mijn kookboek";
   containerEl.innerHTML = `
     <section class="hero">
       <div class="hero-dots">
@@ -50,7 +51,7 @@ function renderEmpty(firstName) {
         <span class="dot d10"></span>
       </div>
       <div class="hero-inner">
-        <h1>Hoi ${escapeHtml(firstName)}, jouw kookboek begint hier.</h1>
+        <h1>Hoi ${escapeHtml(firstName)}, ${escapeHtml(cookbookName)} begint hier.</h1>
         <p class="subtitle">Bewaar je eigen recepten en bouw je persoonlijke kookboek op.</p>
         <div class="hero-buttons">
           <button class="btn btn-primary" data-nav="add">Voeg je eerste recept toe</button>
@@ -71,12 +72,13 @@ function renderEmpty(firstName) {
 }
 
 function renderList(firstName, count) {
+  const cookbookName = STATE.profile?.cookbook_name || "Mijn kookboek";
   containerEl.innerHTML = `
     <section class="block compact">
       <div class="container">
         <div class="page-head">
           <div>
-            <h1>Mijn kookboek</h1>
+            <h1>${escapeHtml(cookbookName)}</h1>
             <p>${count} ${count === 1 ? "recept" : "recepten"} bewaard, ${escapeHtml(firstName)}</p>
           </div>
           <button class="btn btn-dark" data-nav="add">Voeg recept toe</button>
