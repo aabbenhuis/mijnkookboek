@@ -13,13 +13,6 @@ export const COOK_STYLES = {
     prompt: "",
     imageHint: "warm magazine quality food photography",
   },
-  "persoonlijke-kok": {
-    label: "Persoonlijke Kok (Ottolenghi + Mindy Pelz)",
-    category: "Aanbevolen",
-    prompt: `Je kookt in de geest van Mindy Pelz en Yotam Ottolenghi. Kleurrijke plantrijke gerechten vol smaak, puur en voedzaam, met ruimte voor Aziatische invloeden. Wat je omarmt: geroosterde groenten met diepte, verse kruiden, gezonde vetten zoals olijfolie en tahin, peulvruchten als eiwitbron, fermentatie zoals miso en kefir, en Aziatische smaakmakers zoals gember en tamari. Wat je vermijdt: vette pasta's met room, witbrood en witte rijst als basis, veel toegevoegde suikers en ultra bewerkte ingredienten. Een avondmaaltijd blijft standaard onder 600 kcal per persoon.`,
-    imageHint: "colorful plant forward composition, fresh herbs, varied textures, magazine quality, vibrant bowl",
-  },
-
   "ottolenghi": {
     label: "Yotam Ottolenghi",
     category: "Groenten en mediterraan",
@@ -247,7 +240,6 @@ export const COOK_STYLES = {
 // dan vervangt de stylistTag automatisch de persoonsnaam in alle UI weergaves.
 export const STYLIST_TAGS = {
   "neutraal": "Geen specifieke stijl",
-  "persoonlijke-kok": "Plantrijk en mediterraan",
 
   "ottolenghi": "Midden-Oosterse fusion",
   "sami-tamimi": "Levantijnse keuken",
