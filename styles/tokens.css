@@ -1,0 +1,87 @@
+/* Design tokens, gebaseerd op Notion design system */
+:root {
+  /* Brand kleuren */
+  --primary: #5645d4;
+  --primary-pressed: #4534b3;
+  --primary-deep: #3a2a99;
+  --on-primary: #ffffff;
+  --brand-navy: #0a1530;
+  --brand-navy-deep: #070f24;
+  --brand-navy-mid: #1a2a52;
+  --link-blue: #0075de;
+  --brand-orange: #dd5b00;
+  --brand-orange-deep: #793400;
+  --brand-pink: #ff64c8;
+  --brand-purple: #7b3ff2;
+  --brand-purple-800: #391c57;
+  --brand-teal: #2a9d99;
+  --brand-green: #1aae39;
+  --brand-yellow: #f5d75e;
+
+  /* Pastel tinten voor feature kaarten */
+  --card-tint-peach: #ffe8d4;
+  --card-tint-rose: #fde0ec;
+  --card-tint-mint: #d9f3e1;
+  --card-tint-lavender: #e6e0f5;
+  --card-tint-sky: #dcecfa;
+  --card-tint-yellow: #fef7d6;
+  --card-tint-yellow-bold: #f9e79f;
+  --card-tint-cream: #f8f5e8;
+
+  /* Oppervlakken */
+  --canvas: #ffffff;
+  --surface: #f6f5f4;
+  --surface-soft: #fafaf9;
+  --hairline: #e5e3df;
+  --hairline-soft: #ede9e4;
+  --hairline-strong: #c8c4be;
+
+  /* Tekst */
+  --ink-deep: #000000;
+  --ink: #1a1a1a;
+  --charcoal: #37352f;
+  --slate: #5d5b54;
+  --steel: #787671;
+  --stone: #a4a097;
+  --muted: #bbb8b1;
+  --on-dark: #ffffff;
+  --on-dark-muted: #a4a097;
+
+  /* Semantisch */
+  --success: #1aae39;
+  --warning: #dd5b00;
+  --error: #e03131;
+
+  /* Border radius */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-xxl: 20px;
+  --r-xxxl: 24px;
+  --r-full: 9999px;
+
+  /* Spacing */
+  --s-xxs: 4px;
+  --s-xs: 8px;
+  --s-sm: 12px;
+  --s-md: 16px;
+  --s-lg: 20px;
+  --s-xl: 24px;
+  --s-xxl: 32px;
+  --s-xxxl: 40px;
+  --s-section-sm: 48px;
+  --s-section: 64px;
+  --s-section-lg: 96px;
+  --s-hero: 120px;
+
+  /* Typography */
+  --font: "Inter", -apple-system, system-ui, "Segoe UI", Helvetica, sans-serif;
+
+  /* Schaduwen */
+  --shadow-1: rgba(15, 15, 15, 0.04) 0px 1px 2px 0px;
+  --shadow-2: rgba(15, 15, 15, 0.08) 0px 4px 12px 0px;
+  --shadow-3: rgba(15, 15, 15, 0.20) 0px 24px 48px -8px;
+  --shadow-4: rgba(15, 15, 15, 0.16) 0px 16px 48px -8px;
+}
