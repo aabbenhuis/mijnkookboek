@@ -563,6 +563,41 @@ section.block.compact { padding: var(--s-section) 0; }
   font-size: 14px; color: var(--slate); line-height: 1.5;
 }
 
+/* ===== App footer ===== */
+.app-footer {
+  border-top: 1px solid var(--hairline);
+  padding: var(--s-xl) 0;
+  margin-top: var(--s-section);
+  background: var(--canvas);
+}
+.app-footer .footer-row {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: var(--s-lg);
+  flex-wrap: wrap;
+}
+.app-footer .footer-brand {
+  font-size: 14px;
+  color: var(--steel);
+  font-weight: 500;
+}
+.app-footer .footer-links {
+  display: flex; gap: var(--s-lg);
+  font-size: 14px;
+}
+.app-footer .footer-links a {
+  color: var(--steel);
+  text-decoration: none;
+}
+.app-footer .footer-links a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+@media (max-width: 768px) {
+  .app-footer { margin-top: var(--s-xxl); padding: var(--s-lg) 0; }
+  .app-footer .footer-row { flex-direction: column; gap: var(--s-sm); text-align: center; }
+  .app-footer .footer-links { gap: var(--s-md); justify-content: center; }
+}
+
 /* ===== Credits view ===== */
 .credits-explainer {
   background: var(--surface);

@@ -38,6 +38,21 @@ export function mountShell(rootEl) {
 
     <div id="view-content"></div>
 
+    <footer class="app-footer">
+      <div class="container">
+        <div class="footer-row">
+          <div class="footer-brand">
+            <span>Mijn Digitaal Kookboek</span>
+          </div>
+          <div class="footer-links">
+            <a href="voorwaarden.html" target="_blank">Voorwaarden</a>
+            <a href="privacy.html" target="_blank">Privacy</a>
+            <a href="mailto:info@mijndigitaalkookboek.nl">Contact</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
     <nav class="bottom-nav" id="bottom-nav">
       <button data-nav="home" data-bottom-nav="home">
         <span class="icon">
