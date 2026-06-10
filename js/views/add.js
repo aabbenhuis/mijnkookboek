@@ -492,10 +492,8 @@ Vraag door als iets onduidelijk is. Ga uit van 2 personen tenzij anders gevraagd
     });
     hideTyping();
 
-    if (typeof result.credits === "number") {
-      setState({ profile: { ...STATE.profile, credits: result.credits } });
-      updateCreditDisplay();
-    }
+    // Geen credit update hier: doorpraten kost 0 credits, en de server stuurt dan 0 terug.
+    // De zichtbare aftrek gebeurt pas bij de echte afrekening (chat-recept-klaar).
 
     const reply = result.text;
     chatHistory.push({ role: "assistant", content: reply });

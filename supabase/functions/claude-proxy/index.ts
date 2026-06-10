@@ -75,6 +75,10 @@ Deno.serve(async (req: Request) => {
         }
         return json({ error: "Credit check mislukt: " + msg, errorType: "credit_error" }, 500);
       }
+    } else {
+      // Geen aftrek (bijvoorbeeld doorpraten in de chat): geef het echte saldo terug
+      const { data } = await service.from("profiles").select("credits").eq("id", user.id).single();
+      newBalance = (data?.credits as number) ?? 0;
     }
 
     const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
