@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Wachtwoord opnieuw instellen, Mijn Digitaal Kookboek</title>
+<meta name="theme-color" content="#0a1530" />
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%230a1530'/><text x='50%25' y='62%25' font-family='-apple-system,sans-serif' font-size='110' font-weight='700' text-anchor='middle' fill='white'>K</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles/tokens.css" />
+<link rel="stylesheet" href="styles/base.css" />
+<link rel="stylesheet" href="styles/components.css" />
+</head>
+<body>
+
+<div id="reset-root"></div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./js/config.js";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+});
+
+const root = document.getElementById("reset-root");
+
+function shell(title, inner) {
+  root.innerHTML = `
+    <div class="auth-screen">
+      <div class="card-auth auth-card">
+        <div class="auth-header">
+          <div class="brand-mark">K</div>
+          <h1>${title}</h1>
+        </div>
+        ${inner}
+        <p class="auth-footer-links">
+          <a href="voorwaarden.html" target="_blank">Voorwaarden</a>
+          <span>·</span>
+          <a href="privacy.html" target="_blank">Privacy</a>
+          <span>·</span>
+          <a href="mailto:info@mijndigitaalkookboek.nl">Contact</a>
+        </p>
+      </div>
+    </div>`;
+}
+
+function renderForm() {
+  shell("Kies een nieuw wachtwoord", `
+    <form id="reset-form" class="stack">
+      <div class="field">
+        <label for="pw">Nieuw wachtwoord</label>
+        <input type="password" id="pw" minlength="8" required autocomplete="new-password" placeholder="Minstens 8 tekens" />
+      </div>
+      <div class="field">
+        <label for="pw2">Herhaal wachtwoord</label>
+        <input type="password" id="pw2" minlength="8" required autocomplete="new-password" placeholder="Nog een keer" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-full btn-lg" id="reset-submit">Bewaar nieuw wachtwoord</button>
+      <p class="hint" id="reset-msg" style="min-height: 18px;"></p>
+    </form>
+  `);
+  document.getElementById("reset-form").addEventListener("submit", onSubmit);
+}
+
+function renderMessage(title, body, buttonLabel) {
+  shell(title, `
+    <p style="margin: 0 0 20px; color: var(--slate); line-height: 1.6;">${body}</p>
+    <a href="./" class="btn btn-primary btn-full btn-lg">${buttonLabel}</a>
+  `);
+}
+
+async function onSubmit(e) {
+  e.preventDefault();
+  const pw = document.getElementById("pw").value;
+  const pw2 = document.getElementById("pw2").value;
+  const msg = document.getElementById("reset-msg");
+  const btn = document.getElementById("reset-submit");
+  msg.style.color = "var(--error)";
+
+  if (pw !== pw2) { msg.textContent = "De twee wachtwoorden zijn niet hetzelfde."; return; }
+  if (pw.length < 8) { msg.textContent = "Kies een wachtwoord van minstens 8 tekens."; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Bezig...';
+  try {
+    const { error } = await supabase.auth.updateUser({ password: pw });
+    if (error) throw error;
+    renderMessage("Gelukt", "Je wachtwoord is opnieuw ingesteld. Je bent meteen ingelogd.", "Naar mijn kookboek");
+  } catch (err) {
+    msg.textContent = err.message || "Er ging iets mis. Vraag eventueel een nieuwe herstellink aan.";
+    btn.disabled = false;
+    btn.textContent = "Bewaar nieuw wachtwoord";
+  }
+}
+
+// Toon laadtekst zolang we de herstel sessie controleren
+shell("Even geduld", `<p style="margin:0; color: var(--slate);">We controleren je herstellink...</p>`);
+
+let handled = false;
+function ready() {
+  if (handled) return;
+  handled = true;
+  renderForm();
+}
+
+// Supabase verwerkt de herstel token uit de URL en geeft een sessie
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === "PASSWORD_RECOVERY" || session) ready();
+});
+
+// Vangnet: als er na een korte tijd geen geldige sessie is, toon een nette melding
+(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) { ready(); return; }
+  setTimeout(async () => {
+    if (handled) return;
+    const { data: { session: s2 } } = await supabase.auth.getSession();
+    if (s2) { ready(); return; }
+    renderMessage(
+      "Link verlopen",
+      "Deze herstellink is niet meer geldig of is al gebruikt. Vraag op de inlogpagina een nieuwe aan via Wachtwoord vergeten.",
+      "Naar inloggen"
+    );
+  }, 2000);
+})();
+</script>
+
+</body>
+</html>
