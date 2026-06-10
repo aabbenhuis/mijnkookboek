@@ -377,7 +377,7 @@ function renderAIChatMode(target) {
     <div class="field" style="max-width: 480px; margin-bottom: 16px;">
       <label>Kookstijl voor dit gesprek</label>
       <select id="chat-cook-style"></select>
-      <p class="hint">De stijl bepaalt hoe Claude voorstellen en het recept opbouwt.</p>
+      <p class="hint">De stijl bepaalt hoe je souschef de voorstellen en het recept opbouwt.</p>
     </div>
     <div class="chat" id="chat">
       <div class="chat-messages" id="chat-messages">
@@ -388,7 +388,7 @@ function renderAIChatMode(target) {
         <button class="btn btn-primary" id="chat-send">Stuur</button>
       </div>
     </div>
-    <p class="hint" style="margin-top: 12px">Praten en voorstellen krijgen is gratis. Pas wanneer Claude het volledige recept aflevert, gaat er 1 credit af.</p>
+    <p class="hint" style="margin-top: 12px">Praten en voorstellen krijgen is gratis. Pas wanneer je souschef het volledige recept aflevert, gaat er 1 credit af.</p>
     <div id="ai-chat-result" style="margin-top: 24px"></div>
   `;
   const preferredStyle = STATE.profile?.default_cook_style || "neutraal";
@@ -461,6 +461,7 @@ async function handleChatSend() {
 
   const sendBtn = document.getElementById("chat-send");
   sendBtn.disabled = true;
+  showTyping();
 
   const styleKey = document.getElementById("chat-cook-style").value || "neutraal";
 
@@ -489,6 +490,7 @@ Vraag door als iets onduidelijk is. Ga uit van 2 personen tenzij anders gevraagd
       creditCost: 0,
       description: "Chat doorpraten",
     });
+    hideTyping();
 
     if (typeof result.credits === "number") {
       setState({ profile: { ...STATE.profile, credits: result.credits } });
@@ -533,6 +535,7 @@ Vraag door als iets onduidelijk is. Ga uit van 2 personen tenzij anders gevraagd
   } catch (err) {
     toast(err.message || "Chat mislukt", "error");
   } finally {
+    hideTyping();
     sendBtn.disabled = false;
   }
 }
@@ -578,6 +581,23 @@ function maybeRenderOptionChips(text) {
   });
   wrap.appendChild(row);
   row.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+// Laadindicatie terwijl de souschef nadenkt
+function showTyping() {
+  hideTyping();
+  const wrap = document.getElementById("chat-messages");
+  if (!wrap) return;
+  const el = document.createElement("div");
+  el.className = "chat-msg assistant chat-typing";
+  el.id = "chat-typing";
+  el.innerHTML = `<img src="assets/icon-hat.svg" width="22" height="22" alt="" /><span>Even aan het koken</span><span class="typing-dots"><i></i><i></i><i></i></span>`;
+  wrap.appendChild(el);
+  el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function hideTyping() {
+  document.getElementById("chat-typing")?.remove();
 }
 
 // ============================================================

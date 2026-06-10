@@ -32,7 +32,7 @@ function render() {
           <h3>Wat kost wat?</h3>
           <ul>
             <li>Recept genereren met AI: ${CREDIT_COSTS.GENERATE} credit</li>
-            <li>Foto inlezen met Claude Vision: ${CREDIT_COSTS.VISION} credit</li>
+            <li>Foto inlezen: ${CREDIT_COSTS.VISION} credit</li>
             <li>Voedingswaarden berekenen: ${CREDIT_COSTS.NUTRITION} credit</li>
             <li>AI foto bij recept genereren: ${CREDIT_COSTS.AI_PHOTO} credits</li>
           </ul>
