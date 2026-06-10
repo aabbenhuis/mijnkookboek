@@ -40,7 +40,14 @@
 
   header.top{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--hairline)}
   .top-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
-  .top img{height:38px;width:auto;display:block}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+  .brand-icon{width:38px;height:38px;display:block}
+  .brand-name{font-size:18px;font-weight:600;color:var(--navy)}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:var(--lavender);color:var(--primary);font-size:13px;font-weight:500;padding:7px 14px;border-radius:999px;margin-bottom:20px}
+  .pill img{width:16px;height:16px;display:block}
+  .card-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+  .card-icon img{width:36px;height:36px;display:block}
+  .tint-cream{background:var(--cream)} .tint-mint{background:var(--mint)} .tint-lavender{background:var(--lavender)} .tint-peach{background:#ffe8d4} .tint-sky{background:#dcecfa}
 
   .hero{padding:72px 0 56px;text-align:center}
   .hero h1{font-size:46px;line-height:1.1;letter-spacing:-1px;font-weight:700;margin:0 0 18px;color:var(--navy)}
@@ -59,7 +66,7 @@
   .card h3{font-size:19px;margin:0 0 8px;color:var(--navy)}
   .card p{margin:0;color:var(--slate);font-size:15px}
 
-  .features{background:var(--surface)}
+  .features{background:var(--cream)}
   .feature-list{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 32px;max-width:820px;margin:0 auto}
   .feature{display:flex;gap:12px;align-items:flex-start;font-size:16px;color:var(--ink)}
   .feature .dot{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--mint);color:#1aae39;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-top:1px}
@@ -107,7 +114,7 @@
 
 <header class="top">
   <div class="wrap top-inner">
-    <img src="assets/logo-lockup.svg" alt="Mijn Digitaal Kookboek" />
+    <a class="brand" href="index.html"><img class="brand-icon" src="assets/favicon.svg" alt="" /><span class="brand-name">Mijn Digitaal Kookboek</span></a>
     <a class="btn btn-ghost" href="app.html">Inloggen</a>
   </div>
 </header>
@@ -115,17 +122,18 @@
 <main>
   <section class="hero">
     <div class="wrap">
-      <h1>Jouw eigen digitale kookboek,<br>met AI als souschef</h1>
+      <span class="pill"><img src="assets/icon-garde.svg" alt="" /> met AI als souschef</span>
+      <h1>Jouw eigen digitale kookboek</h1>
       <p class="lead">Bewaar je eigen recepten, laat AI nieuwe bedenken in de stijl van je favoriete kok, en lees handgeschreven recepten zo van een foto in. Alles op een mooie plek, voor altijd.</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="app.html">Maak je kookboek</a>
-        <a class="btn btn-ghost" href="#prijzen">Bekijk de prijzen</a>
+        <a class="btn btn-ghost" href="#werkt">Zo werkt het</a>
       </div>
-      <p class="hero-note">Begin gratis met 10 credits en 5 voorbeeldrecepten. Geen abonnement.</p>
+      <p class="hero-note">Gratis starten. Je eigen recepten bewaren blijft altijd gratis, en je krijgt 10 credits cadeau voor de AI hulp. Geen abonnement.</p>
     </div>
   </section>
 
-  <section>
+  <section id="werkt">
     <div class="wrap">
       <div class="section-head">
         <h2>Drie manieren om een recept toe te voegen</h2>
@@ -133,17 +141,17 @@
       </div>
       <div class="grid3">
         <div class="card">
-          <div class="num">1</div>
+          <div class="card-icon tint-cream"><img src="assets/icon-cutlery.svg" alt="" /></div>
           <h3>Zelf invullen</h3>
-          <p>Typ je eigen recept in een helder formulier, met ingredienten, stappen en een foto.</p>
+          <p>Typ je eigen recept in een helder formulier, met ingredienten, stappen en een foto. Altijd gratis.</p>
         </div>
         <div class="card">
-          <div class="num">2</div>
+          <div class="card-icon tint-mint"><img src="assets/icon-hat.svg" alt="" /></div>
           <h3>Met AI bedenken</h3>
           <p>Vertel wat je in huis hebt of waar je zin in hebt en kies een kookstijl. Via een formulier of gewoon in een gesprek.</p>
         </div>
         <div class="card">
-          <div class="num">3</div>
+          <div class="card-icon tint-lavender"><img src="assets/icon-pan.svg" alt="" /></div>
           <h3>Uit een foto inlezen</h3>
           <p>Maak een foto van een handgeschreven of gedrukt recept en je kookboek zet het netjes voor je om.</p>
         </div>
@@ -172,7 +180,7 @@
     <div class="wrap">
       <div class="section-head">
         <h2>Eerlijke prijzen, geen abonnement</h2>
-        <p>Je begint gratis. Wil je meer AI, dan koop je losse credits en betaal je alleen wat je gebruikt.</p>
+        <p>Je eigen recepten toevoegen en bewaren is altijd gratis. Wil je AI laten meedenken, dan koop je losse credits en betaal je alleen wat je gebruikt.</p>
       </div>
       <div class="price-grid">
         <div class="price">
@@ -195,6 +203,7 @@
 
       <div class="costs">
         <h4>Wat kost een actie</h4>
+        <div class="row"><span>Eigen recept toevoegen en bewaren</span><span>gratis</span></div>
         <div class="row"><span>AI recept bedenken</span><span>1 credit</span></div>
         <div class="row"><span>Recept uit foto inlezen</span><span>1 credit</span></div>
         <div class="row"><span>Mooie AI foto bij een recept</span><span>5 credits</span></div>
