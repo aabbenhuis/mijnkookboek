@@ -528,6 +528,7 @@ Vraag door als iets onduidelijk is. Ga uit van 2 personen tenzij anders gevraagd
       showRecipePreview(recipe, "ai-chat-result");
     } else {
       appendChatMessage("assistant", reply);
+      maybeRenderOptionChips(reply);
     }
   } catch (err) {
     toast(err.message || "Chat mislukt", "error");
@@ -540,9 +541,43 @@ function appendChatMessage(role, text) {
   const wrap = document.getElementById("chat-messages");
   const el = document.createElement("div");
   el.className = "chat-msg " + role;
-  el.textContent = text;
+  if (role === "assistant") el.innerHTML = renderChatMarkdown(text);
+  else el.textContent = text;
   wrap.appendChild(el);
-  wrap.scrollTop = wrap.scrollHeight;
+  el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function renderChatMarkdown(text) {
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+  return esc(text)
+    .replace(/^\s*#{1,6}\s*(.+)$/gm, "<strong>$1</strong>")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/^[ \t]*[-*]\s+(.+)$/gm, "&bull; $1");
+}
+
+// Toont de drie voorstellen als aantikbare kaartjes onder een voorstel bericht
+function maybeRenderOptionChips(text) {
+  if (!/welk gerecht|spreekt je aan|welke spreekt/i.test(text)) return;
+  const titles = [...text.matchAll(/\*\*(.+?)\*\*/g)].map(m => m[1].trim()).filter(Boolean);
+  const uniq = [...new Set(titles)].slice(0, 3);
+  if (uniq.length < 2) return;
+  const wrap = document.getElementById("chat-messages");
+  const row = document.createElement("div");
+  row.className = "chat-options";
+  uniq.forEach(t => {
+    const b = document.createElement("button");
+    b.className = "chat-option";
+    b.innerHTML = `<span class="chat-option-label">Kies</span> ${renderChatMarkdown(t)}`;
+    b.addEventListener("click", () => {
+      row.querySelectorAll("button").forEach(x => x.disabled = true);
+      const input = document.getElementById("chat-input");
+      input.value = `Ik kies: ${t}`;
+      handleChatSend();
+    });
+    row.appendChild(b);
+  });
+  wrap.appendChild(row);
+  row.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 // ============================================================

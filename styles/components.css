@@ -778,6 +778,80 @@ button.credit-pill:hover { background: var(--card-tint-yellow); }
 .chat-msg.assistant { background: var(--surface); color: var(--ink); align-self: flex-start; }
 .chat-input-row { display: flex; gap: var(--s-xs); padding: var(--s-md); border-top: 1px solid var(--hairline); }
 .chat-input-row input { flex: 1; }
+.chat-msg strong { font-weight: 600; }
+.chat-options { display: flex; flex-direction: column; gap: 8px; align-self: flex-start; max-width: 85%; }
+.chat-option {
+  text-align: left; background: var(--canvas);
+  border: 1px solid var(--hairline-strong); border-radius: var(--r-md);
+  padding: 11px 14px; font-size: 14px; font-weight: 600; color: var(--ink);
+  cursor: pointer; transition: border-color 120ms ease, background 120ms ease;
+}
+.chat-option:hover { background: var(--surface); border-color: var(--primary); }
+.chat-option:disabled { opacity: .5; cursor: default; }
+.chat-option-label {
+  display: inline-block; background: var(--primary); color: var(--on-primary);
+  font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: var(--r-full); margin-right: 6px;
+}
+
+@media (max-width: 780px) {
+  .chat { border: 0; max-height: none; min-height: 0; background: transparent; }
+  .chat-messages { overflow: visible; padding: 0; gap: 12px; justify-content: flex-start; }
+  .chat-msg { max-width: 90%; }
+  .chat-options { max-width: 100%; }
+  .chat-input-row {
+    border: 1px solid var(--hairline); border-radius: var(--r-lg);
+    padding: 10px; margin-top: 12px; background: var(--canvas);
+  }
+}
+
+/* ===== Home scherm ===== */
+.home-hello {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--card-tint-lavender); border-radius: var(--r-xl);
+  padding: 20px 24px; margin: 8px 0 18px; position: relative; overflow: hidden;
+}
+.home-hi { font-size: 14px; color: var(--slate); margin: 0; }
+.home-hello h1 { font-size: 28px; letter-spacing: -0.5px; color: var(--brand-navy); margin: 2px 0 4px; }
+.home-count { font-size: 14px; color: var(--steel); margin: 0; }
+.home-hello-deco { position: absolute; right: -6px; bottom: -16px; opacity: 0.15; pointer-events: none; }
+
+.home-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.home-tile {
+  border: 1px solid var(--hairline); border-radius: var(--r-lg);
+  padding: 16px 8px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.home-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+.home-tile img { width: 30px; height: 30px; }
+.home-tile span { font-size: 13px; font-weight: 600; color: var(--brand-navy); }
+.home-tile.tint-cream { background: var(--card-tint-cream); }
+.home-tile.tint-mint { background: var(--card-tint-mint); }
+.home-tile.tint-lavender { background: var(--card-tint-lavender); }
+
+.home-featured { margin-bottom: 24px; }
+.featured-card {
+  display: block; width: 100%; padding: 0; cursor: pointer; text-align: left;
+  border: 1px solid var(--hairline); border-radius: var(--r-xl); overflow: hidden; background: none;
+}
+.featured-photo { height: 200px; background-size: cover; background-position: center; position: relative; }
+.featured-photo.placeholder { background: linear-gradient(135deg, var(--brand-orange), #f6a96b); }
+.featured-badge {
+  position: absolute; top: 14px; left: 14px;
+  background: var(--primary); color: var(--on-primary);
+  font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: var(--r-full);
+}
+.featured-overlay { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px; background: linear-gradient(transparent, rgba(10,21,48,0.7)); }
+.featured-overlay h3 { color: #fff; font-size: 22px; margin: 0 0 3px; }
+.featured-overlay span { color: #e8e6f0; font-size: 14px; }
+
+@media (max-width: 780px) {
+  .home-hello { padding: 18px 20px; }
+  .home-hello h1 { font-size: 24px; }
+  .home-tile img { width: 28px; height: 28px; }
+  .featured-photo { height: 160px; }
+  .featured-overlay h3 { font-size: 19px; }
+}
 
 /* ===== Stat helpers ===== */
 .row { display: flex; gap: var(--s-sm); align-items: center; flex-wrap: wrap; }

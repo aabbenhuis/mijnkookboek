@@ -76,13 +76,24 @@ function renderList(firstName, count) {
   containerEl.innerHTML = `
     <section class="block compact">
       <div class="container">
-        <div class="page-head">
+        <div class="home-hello">
           <div>
+            <p class="home-hi">Hoi ${escapeHtml(firstName)},</p>
             <h1>${escapeHtml(cookbookName)}</h1>
-            <p>${count} ${count === 1 ? "recept" : "recepten"} bewaard, ${escapeHtml(firstName)}</p>
+            <p class="home-count">${count} ${count === 1 ? "recept" : "recepten"} bewaard</p>
           </div>
-          <button class="btn btn-dark" data-nav="add">Voeg recept toe</button>
+          <span class="home-hello-deco" aria-hidden="true">
+            <svg width="84" height="84" viewBox="0 0 48 48"><circle cx="20" cy="24" r="13" fill="#0a1530"/><circle cx="20" cy="24" r="8" fill="#7b3ff2"/><rect x="32" y="21" width="13" height="6" rx="3" fill="#0a1530"/></svg>
+          </span>
         </div>
+
+        <div class="home-tiles">
+          <button class="home-tile tint-cream" data-add-tab="manual"><img src="assets/icon-cutlery.svg" alt="" /><span>Zelf</span></button>
+          <button class="home-tile tint-mint" data-add-tab="ai"><img src="assets/icon-hat.svg" alt="" /><span>Met AI</span></button>
+          <button class="home-tile tint-lavender" data-add-tab="photo"><img src="assets/icon-pan.svg" alt="" /><span>Uit foto</span></button>
+        </div>
+
+        <div id="featured" class="home-featured"></div>
 
         <div class="search-row">
           <input class="search-input" id="search-input" placeholder="Zoek op titel of ingredient" />
@@ -161,6 +172,10 @@ function renderList(firstName, count) {
     document.getElementById("more-filters-drawer").style.display = "none";
   });
 
+  document.querySelectorAll("[data-add-tab]").forEach(b => {
+    b.addEventListener("click", () => showView("add", { tab: b.dataset.addTab }));
+  });
+
   applyFilter();
 }
 
@@ -225,12 +240,48 @@ function applyFilter() {
 
   renderActiveFilters({ mealFilter, styleFilter, timeFilter, ratingFilter, dietFilters, q });
 
+  const hasActiveFilter = !!(q || mealFilter || styleFilter || timeFilter || ratingFilter || dietFilters.length);
+
+  // Uitgelicht recept: nieuwste recept bovenaan, alleen als er niet gezocht of gefilterd wordt
+  const featured = document.getElementById("featured");
+  let gridList = filtered;
+  if (featured) {
+    if (!hasActiveFilter && recipes.length > 0) {
+      featured.innerHTML = featuredCardHtml(recipes[0]);
+      featured.style.display = "";
+      featured.querySelector("[data-recipe-id]")?.addEventListener("click", (e) => {
+        showView("detail", { id: e.currentTarget.dataset.recipeId });
+      });
+      gridList = recipes.slice(1);
+    } else {
+      featured.innerHTML = "";
+      featured.style.display = "none";
+    }
+  }
+
   const grid = document.getElementById("recipe-grid");
   if (!grid) return;
-  grid.innerHTML = filtered.map(recipeCardHtml).join("");
+  grid.innerHTML = gridList.map(recipeCardHtml).join("");
   grid.querySelectorAll("[data-recipe-id]").forEach(el => {
     el.addEventListener("click", () => showView("detail", { id: el.dataset.recipeId }));
   });
+}
+
+function featuredCardHtml(r) {
+  const meta = [r.cook_time ? `${r.cook_time} min` : null, r.meal_type].filter(Boolean).join(" · ");
+  const hasPhoto = !!r.photo_url;
+  const style = hasPhoto ? `style="background-image:url('${r.photo_url}')"` : "";
+  return `
+    <button class="featured-card" data-recipe-id="${r.id}">
+      <div class="featured-photo ${hasPhoto ? "" : "placeholder"}" ${style}>
+        <span class="featured-badge">Nieuwste recept</span>
+        <div class="featured-overlay">
+          <h3>${escapeHtml(r.title)}</h3>
+          ${meta ? `<span>${escapeHtml(meta)}</span>` : ""}
+        </div>
+      </div>
+    </button>
+  `;
 }
 
 function renderActiveFilters({ mealFilter, styleFilter, timeFilter, ratingFilter, dietFilters, q }) {
