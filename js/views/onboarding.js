@@ -193,7 +193,9 @@ export async function addExampleRecipesToCurrentUser() {
 
   let added = 0;
   let skipped = 0;
-  for (const recipe of EXAMPLE_RECIPES) {
+  // Omgekeerd inladen: het eerste recept in de lijst (PokéBowl) wordt als laatste
+  // toegevoegd en is dan het nieuwste, zodat het bovenaan als uitgelicht recept verschijnt.
+  for (const recipe of [...EXAMPLE_RECIPES].reverse()) {
     if (existingTitles.has(recipe.title)) {
       skipped++;
       continue;

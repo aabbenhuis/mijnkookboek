@@ -267,6 +267,26 @@ function applyFilter() {
   });
 }
 
+// Herkomst van een recept: waar komt het vandaan
+const SOURCE_META = {
+  example:   { label: "Voorbeeld",    tint: "sky",      icon: '<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>' },
+  manual:    { label: "Zelf gemaakt", tint: "cream",    icon: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>' },
+  "ai-form": { label: "Met AI",       tint: "mint",     icon: '<path d="M12 3 L13.6 9.4 L20 11 L13.6 12.6 L12 19 L10.4 12.6 L4 11 L10.4 9.4 Z"/>' },
+  "ai-chat": { label: "Met AI",       tint: "mint",     icon: '<path d="M12 3 L13.6 9.4 L20 11 L13.6 12.6 L12 19 L10.4 12.6 L4 11 L10.4 9.4 Z"/>' },
+  photo:     { label: "Van foto",     tint: "lavender", icon: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>' },
+};
+
+function sourceMeta(r) {
+  if (r.is_example) return SOURCE_META.example;
+  return SOURCE_META[r.source] || SOURCE_META.manual;
+}
+
+function sourceChipHtml(r, variant) {
+  const m = sourceMeta(r);
+  const cls = variant === "featured" ? "featured-source" : "card-source-chip";
+  return `<span class="${cls} tint-${m.tint}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${m.icon}</svg>${m.label}</span>`;
+}
+
 function featuredCardHtml(r) {
   const meta = [r.cook_time ? `${r.cook_time} min` : null, r.meal_type].filter(Boolean).join(" · ");
   const hasPhoto = !!r.photo_url;
@@ -275,6 +295,7 @@ function featuredCardHtml(r) {
     <button class="featured-card" data-recipe-id="${r.id}">
       <div class="featured-photo ${hasPhoto ? "" : "placeholder"}" ${style}>
         <span class="featured-badge">Nieuwste recept</span>
+        ${sourceChipHtml(r, "featured")}
         <div class="featured-overlay">
           <h3>${escapeHtml(r.title)}</h3>
           ${meta ? `<span>${escapeHtml(meta)}</span>` : ""}
@@ -369,6 +390,7 @@ function recipeCardHtml(r) {
   return `
     <div class="recipe-card" data-recipe-id="${r.id}">
       <div class="recipe-image ${photoUrl ? "" : "placeholder"}" ${photoUrl ? `style="background-image:url('${photoUrl}')"` : ""}>
+        ${sourceChipHtml(r)}
         ${photoUrl ? "" : (r.meal_type || "Recept")}
       </div>
       <div class="recipe-body">

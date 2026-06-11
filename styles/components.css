@@ -236,7 +236,38 @@ section.block.compact { padding: var(--s-section) 0; }
   background-size: cover; background-position: center;
   display: flex; align-items: center; justify-content: center;
   color: var(--steel); font-size: 14px;
+  position: relative;
 }
+
+/* Herkomstlabel op een receptkaart */
+.card-source-chip {
+  position: absolute; top: 10px; left: 10px; z-index: 1;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 9px; border-radius: var(--r-full);
+  font-size: 11.5px; font-weight: 600; line-height: 1;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.14);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.card-source-chip svg { width: 12px; height: 12px; flex: 0 0 auto; }
+
+/* Herkomstlabel op het uitgelichte recept */
+.featured-source {
+  position: absolute; top: 14px; right: 14px; z-index: 2;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; border-radius: var(--r-full);
+  font-size: 12.5px; font-weight: 600; line-height: 1;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.featured-source svg { width: 13px; height: 13px; flex: 0 0 auto; }
+
+/* Herkomstlabel boven de titel op het detailscherm */
+.detail-source {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: var(--r-full);
+  font-size: 13px; font-weight: 600; line-height: 1;
+  margin-bottom: 14px;
+}
+.detail-source svg { width: 14px; height: 14px; flex: 0 0 auto; }
 .recipe-image.placeholder { background: var(--card-tint-cream); color: var(--charcoal); }
 .recipe-body { padding: var(--s-lg); display: flex; flex-direction: column; gap: var(--s-xs); flex: 1; }
 .recipe-title { font-size: 18px; font-weight: 600; color: var(--ink); margin: 0; line-height: 1.4; }

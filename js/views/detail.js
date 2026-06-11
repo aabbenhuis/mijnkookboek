@@ -48,6 +48,17 @@ function render() {
     styleBadge = `<div class="style-badges" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px;">${personBadge}${tagBadge}</div>`;
   }
 
+  // Herkomst van het recept als klein label boven de titel
+  const SRC = {
+    example:   { label: "Voorbeeldrecept", tint: "sky",      icon: '<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>' },
+    manual:    { label: "Zelf gemaakt",    tint: "cream",    icon: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>' },
+    "ai-form": { label: "Gemaakt met AI",  tint: "mint",     icon: '<path d="M12 3 L13.6 9.4 L20 11 L13.6 12.6 L12 19 L10.4 12.6 L4 11 L10.4 9.4 Z"/>' },
+    "ai-chat": { label: "Gemaakt met AI",  tint: "mint",     icon: '<path d="M12 3 L13.6 9.4 L20 11 L13.6 12.6 L12 19 L10.4 12.6 L4 11 L10.4 9.4 Z"/>' },
+    photo:     { label: "Uit een foto",    tint: "lavender", icon: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>' },
+  };
+  const sm = r.is_example ? SRC.example : (SRC[r.source] || SRC.manual);
+  const sourceChip = `<span class="detail-source tint-${sm.tint}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${sm.icon}</svg>${sm.label}</span>`;
+
   const aiPhotoBtn = r.photo_url
     ? `<button class="btn btn-secondary" data-detail-regen-image>Vervang met AI foto (${CREDIT_COSTS.AI_PHOTO} credits)</button>`
     : `<button class="btn btn-dark" data-detail-gen-image>Genereer mooie foto met AI (${CREDIT_COSTS.AI_PHOTO} credits)</button>`;
@@ -83,6 +94,7 @@ function render() {
             ${photoActions}
           </div>
           <div>
+            ${sourceChip}
             ${styleBadge}
             <h1>${escapeHtml(r.title)}</h1>
             <p style="color: var(--slate); margin: 0 0 12px; font-size: 18px;">${escapeHtml(r.description || "")}</p>
