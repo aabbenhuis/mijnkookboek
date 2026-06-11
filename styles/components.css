@@ -728,6 +728,44 @@ button.credit-pill:hover { background: var(--card-tint-yellow); }
 }
 .auth-legal a { color: var(--primary); text-decoration: underline; }
 
+/* Google knop: wit met rand, donkere tekst, logo links */
+.btn-google {
+  background: var(--canvas);
+  color: var(--ink);
+  border: 1px solid var(--hairline-strong);
+  gap: 10px;
+}
+.btn-google:hover { background: var(--surface); }
+.btn-google svg { flex: 0 0 auto; }
+
+/* Scheidingslijn met tekst in het midden */
+.auth-divider {
+  display: flex; align-items: center;
+  gap: 12px;
+  margin: var(--s-lg) 0;
+  color: var(--steel); font-size: 13px;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: ""; flex: 1 1 auto;
+  height: 1px; background: var(--hairline);
+}
+
+/* Bevestiging na het versturen van een inloglink */
+.auth-sent { text-align: center; }
+.auth-sent-icon {
+  width: 64px; height: 64px;
+  margin: 0 auto var(--s-md);
+  border-radius: var(--r-full);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--card-tint-mint);
+  color: var(--brand-navy);
+}
+.auth-sent-icon svg { width: 30px; height: 30px; }
+.auth-sent h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; margin: 0 0 var(--s-xs); }
+.auth-sent p { color: var(--slate); font-size: 15px; margin: 0 0 var(--s-sm); }
+.auth-sent .hint { color: var(--steel); font-size: 13px; margin-bottom: var(--s-lg); }
+
 .auth-footer-links {
   text-align: center;
   margin-top: var(--s-xl);

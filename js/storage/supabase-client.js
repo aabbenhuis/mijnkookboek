@@ -61,6 +61,39 @@ export async function sendPasswordReset(email) {
   if (error) throw error;
 }
 
+// Bepaal waar de gebruiker na inloggen terechtkomt: altijd in de app, niet op de voorpagina
+function appRedirectUrl() {
+  const origin = window.location.origin;
+  // Lokaal openen via file:// geeft geen bruikbare origin, dan laten we Supabase de Site URL gebruiken
+  if (!origin || origin === "null") return undefined;
+  return `${origin}/app.html`;
+}
+
+// Inloggen of registreren met Google
+export async function signInWithGoogle() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: appRedirectUrl(),
+    },
+  });
+  if (error) throw error;
+  return data;
+}
+
+// Inloggen of registreren met een magische link per mail (geen wachtwoord nodig)
+export async function signInWithMagicLink(email) {
+  const { data, error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: appRedirectUrl(),
+      shouldCreateUser: true,
+    },
+  });
+  if (error) throw error;
+  return data;
+}
+
 // ============================================================
 // PROFIEL
 // ============================================================
