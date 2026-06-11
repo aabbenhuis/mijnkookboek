@@ -57,6 +57,7 @@ export const EXAMPLE_RECIPES = [
     source: "example",
     language: "nl",
     is_example: true,
+    photo_is_ai: true,
     nutrition: { calories: 520, protein: 28, carbs: 65, fat: 16, fiber: 7 }
   },
   {
@@ -97,6 +98,7 @@ export const EXAMPLE_RECIPES = [
     source: "example",
     language: "nl",
     is_example: true,
+    photo_is_ai: true,
     nutrition: { calories: 580, protein: 32, carbs: 48, fat: 28, fiber: 6 }
   },
   {
@@ -133,6 +135,7 @@ export const EXAMPLE_RECIPES = [
     source: "example",
     language: "nl",
     is_example: true,
+    photo_is_ai: true,
     nutrition: { calories: 580, protein: 34, carbs: 52, fat: 22, fiber: 6 }
   },
   {
@@ -173,6 +176,7 @@ export const EXAMPLE_RECIPES = [
     source: "example",
     language: "nl",
     is_example: true,
+    photo_is_ai: true,
     nutrition: { calories: 320, protein: 11, carbs: 22, fat: 22, fiber: 8 }
   },
   {
@@ -218,6 +222,7 @@ export const EXAMPLE_RECIPES = [
     source: "example",
     language: "nl",
     is_example: true,
+    photo_is_ai: true,
     nutrition: { calories: 620, protein: 22, carbs: 58, fat: 32, fiber: 7 }
   },
 ];

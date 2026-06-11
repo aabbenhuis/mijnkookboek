@@ -262,7 +262,7 @@ async function updateExistingRecipe(data, photoBlob, submitBtn) {
     if (photoBlob) {
       try {
         const photoUrl = await supabaseClient.uploadRecipePhoto(editRecipe.id, photoBlob, "jpg");
-        await supabaseClient.updateRecipe(editRecipe.id, { photo_url: photoUrl });
+        await supabaseClient.updateRecipe(editRecipe.id, { photo_url: photoUrl, photo_is_ai: false });
       } catch {
         toast("Recept bewaard, maar foto uploaden mislukte", "error");
       }
@@ -769,7 +769,7 @@ async function saveRecipeFromForm(recipeData, photoBlob, submitBtn) {
     if (photoBlob) {
       try {
         const photoUrl = await supabaseClient.uploadRecipePhoto(created.id, photoBlob, "jpg");
-        await supabaseClient.updateRecipe(created.id, { photo_url: photoUrl });
+        await supabaseClient.updateRecipe(created.id, { photo_url: photoUrl, photo_is_ai: false });
       } catch (photoErr) {
         toast("Recept bewaard, maar foto uploaden mislukte", "error");
       }

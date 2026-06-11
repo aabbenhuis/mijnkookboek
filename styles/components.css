@@ -268,6 +268,14 @@ section.block.compact { padding: var(--s-section) 0; }
   margin-bottom: 14px;
 }
 .detail-source svg { width: 14px; height: 14px; flex: 0 0 auto; }
+
+/* Fotoherkomst onder de foto op het detailscherm */
+.photo-origin {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 10px;
+  font-size: 13px; font-weight: 500; color: var(--steel);
+}
+.photo-origin svg { width: 14px; height: 14px; flex: 0 0 auto; }
 .recipe-image.placeholder { background: var(--card-tint-cream); color: var(--charcoal); }
 .recipe-body { padding: var(--s-lg); display: flex; flex-direction: column; gap: var(--s-xs); flex: 1; }
 .recipe-title { font-size: 18px; font-weight: 600; color: var(--ink); margin: 0; line-height: 1.4; }

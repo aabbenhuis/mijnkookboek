@@ -59,11 +59,24 @@ function render() {
   const sm = r.is_example ? SRC.example : (SRC[r.source] || SRC.manual);
   const sourceChip = `<span class="detail-source tint-${sm.tint}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${sm.icon}</svg>${sm.label}</span>`;
 
+  // Fotoherkomst: alleen tonen als er een foto is en we weten waar die vandaan komt
+  let photoOrigin = "";
+  if (r.photo_url && (r.photo_is_ai === true || r.photo_is_ai === false)) {
+    const isAi = r.photo_is_ai === true;
+    const pIcon = isAi
+      ? '<path d="M12 3 L13.6 9.4 L20 11 L13.6 12.6 L12 19 L10.4 12.6 L4 11 L10.4 9.4 Z"/>'
+      : '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>';
+    photoOrigin = `<div class="photo-origin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${pIcon}</svg>${isAi ? "AI foto" : "Eigen foto"}</div>`;
+  }
+
+  // Eigen foto is gratis en de natuurlijke hoofdoptie, AI foto is een betaalde extra
+  const uploadBtn = r.photo_url
+    ? `<button class="btn btn-secondary" data-detail-upload>Vervang door eigen foto</button>`
+    : `<button class="btn btn-dark" data-detail-upload>Eigen foto toevoegen (gratis)</button>`;
   const aiPhotoBtn = r.photo_url
     ? `<button class="btn btn-secondary" data-detail-regen-image>Vervang met AI foto (${CREDIT_COSTS.AI_PHOTO} credits)</button>`
-    : `<button class="btn btn-dark" data-detail-gen-image>Genereer mooie foto met AI (${CREDIT_COSTS.AI_PHOTO} credits)</button>`;
-  const uploadBtn = `<button class="btn btn-secondary" data-detail-upload>${r.photo_url ? "Upload eigen foto" : "Of upload een eigen foto"}</button>`;
-  const photoActions = `<div style="display: grid; gap: 8px; margin-top: 12px;">${aiPhotoBtn}${uploadBtn}</div>`;
+    : `<button class="btn btn-secondary" data-detail-gen-image>Of laat AI een foto maken (${CREDIT_COSTS.AI_PHOTO} credits)</button>`;
+  const photoActions = `<div style="display: grid; gap: 8px; margin-top: 12px;">${uploadBtn}${aiPhotoBtn}</div>`;
 
   containerEl.innerHTML = `
     <section class="block">
@@ -91,6 +104,7 @@ function render() {
             ${r.photo_url
               ? `<div class="photo" style="background-image:url('${r.photo_url}')"></div>`
               : `<div class="photo">Geen foto</div>`}
+            ${photoOrigin}
             ${photoActions}
           </div>
           <div>
@@ -362,8 +376,9 @@ function bindPhotoActions() {
       try {
         const photoUrl = await generateRecipePhoto(currentRecipe);
         if (photoUrl) {
-          await supabaseClient.updateRecipe(currentRecipe.id, { photo_url: photoUrl });
+          await supabaseClient.updateRecipe(currentRecipe.id, { photo_url: photoUrl, photo_is_ai: true });
           currentRecipe.photo_url = photoUrl;
+          currentRecipe.photo_is_ai = true;
           toast("Foto opgeslagen bij recept", "success");
           render();
         } else {
@@ -388,8 +403,9 @@ function bindPhotoActions() {
         const blob = await pickAndCompressPhoto();
         if (blob) {
           const photoUrl = await supabaseClient.uploadRecipePhoto(currentRecipe.id, blob, "jpg");
-          await supabaseClient.updateRecipe(currentRecipe.id, { photo_url: photoUrl });
+          await supabaseClient.updateRecipe(currentRecipe.id, { photo_url: photoUrl, photo_is_ai: false });
           currentRecipe.photo_url = photoUrl;
+          currentRecipe.photo_is_ai = false;
           toast("Eigen foto opgeslagen", "success");
           render();
         } else {

@@ -31,10 +31,12 @@ function render() {
         <div class="credits-explainer">
           <h3>Wat kost wat?</h3>
           <ul>
+            <li>Eigen recept toevoegen en bewaren: gratis</li>
+            <li>Eigen foto toevoegen: gratis</li>
             <li>Recept genereren met AI: ${CREDIT_COSTS.GENERATE} credit</li>
             <li>Foto inlezen: ${CREDIT_COSTS.VISION} credit</li>
             <li>Voedingswaarden berekenen: ${CREDIT_COSTS.NUTRITION} credit</li>
-            <li>AI foto bij recept genereren: ${CREDIT_COSTS.AI_PHOTO} credits</li>
+            <li>AI foto bij recept genereren (optioneel): ${CREDIT_COSTS.AI_PHOTO} credits</li>
           </ul>
         </div>
 
