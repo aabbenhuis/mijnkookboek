@@ -20,6 +20,17 @@ const CATEGORY_LABELS = {
 
 const CATEGORY_ORDER = ["groente", "zuivel", "vlees-vis", "droogwaren", "kruiden", "overig"];
 
+const CAT_COLORS = {
+  "groente": "#1aae39",
+  "zuivel": "#0075de",
+  "vlees-vis": "#ff64c8",
+  "droogwaren": "#dd5b00",
+  "kruiden": "#2a9d99",
+  "overig": "#a4a097",
+};
+
+const CART_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`;
+
 export async function mount(container) {
   containerEl = container;
   updateActiveNav("shopping");
@@ -38,8 +49,9 @@ function render() {
     containerEl.innerHTML = `
       <section class="block">
         <div class="container">
-          <div class="page-head">
-            <div>
+          <div class="page-hero">
+            <div class="page-hero-icon tint-mint">${CART_SVG}</div>
+            <div class="page-hero-text">
               <h1>Boodschappenlijst</h1>
               <p>Voeg ingredienten toe vanuit een recept.</p>
             </div>
@@ -62,16 +74,24 @@ function render() {
     groups[i.category].push(i);
   });
 
+  const done = items.length - remaining;
+  const pct = items.length ? Math.round((done / items.length) * 100) : 0;
+
   let html = `
     <section class="block">
       <div class="container">
-        <div class="page-head">
-          <div>
+        <div class="page-hero">
+          <div class="page-hero-icon tint-mint">${CART_SVG}</div>
+          <div class="page-hero-text">
             <h1>Boodschappenlijst</h1>
-            <p>${remaining} van ${items.length} nog te halen</p>
+            <p>${remaining ? `Nog ${remaining} te halen` : "Alles gehaald, goed bezig"}</p>
           </div>
-          <button class="btn btn-secondary" id="btn-clear">Lijst legen</button>
+          <button class="btn btn-secondary page-hero-action" id="btn-clear">Lijst legen</button>
         </div>
+
+        <div class="shop-progress"><span style="width:${pct}%"></span></div>
+        <div class="shop-progress-label">${done} van ${items.length} afgevinkt</div>
+
         <div id="shopping-content">
   `;
 
@@ -79,8 +99,9 @@ function render() {
     const list = groups[key];
     if (!list || !list.length) return;
     const label = CATEGORY_LABELS[key] || "Overig";
-    html += `<div class="shop-group">
-      <h3>${escapeHtml(label)}</h3>
+    const color = CAT_COLORS[key] || CAT_COLORS.overig;
+    html += `<div class="shop-cat"><span class="dot" style="background:${color}"></span><span>${escapeHtml(label)}</span></div>
+    <div class="shop-group">
       ${list.map(i => `
         <div class="shop-item ${i.checked ? "done" : ""}" data-shop-id="${i.id}">
           <input type="checkbox" ${i.checked ? "checked" : ""} data-shop-check="${i.id}">

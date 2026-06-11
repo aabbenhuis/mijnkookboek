@@ -54,24 +54,27 @@ function render() {
     : "Kies hoe je dit recept wilt maken.";
   const tabs = isEdit
     ? ""
-    : `<div class="pill-tabs" id="add-tabs">
-         <button class="pill-tab ${activeTab === "manual" ? "active" : ""}" data-tab="manual">Zelf invullen</button>
-         <button class="pill-tab ${activeTab === "ai" ? "active" : ""}" data-tab="ai">Met AI genereren</button>
-         <button class="pill-tab ${activeTab === "photo" ? "active" : ""}" data-tab="photo">Uit foto inlezen</button>
+    : `<div class="method-tabs" id="add-tabs">
+         <button class="method-tab ${activeTab === "manual" ? "active" : ""}" data-tab="manual"><img src="assets/icon-cook.svg" alt="" /><span>Zelf invullen</span></button>
+         <button class="method-tab ${activeTab === "ai" ? "active" : ""}" data-tab="ai"><img src="assets/icon-sparkle.svg" alt="" /><span>Met AI</span></button>
+         <button class="method-tab ${activeTab === "photo" ? "active" : ""}" data-tab="photo"><img src="assets/icon-camera.svg" alt="" /><span>Uit foto</span></button>
        </div>`;
   const backNav = isEdit ? `detail` : `home`;
   const backLabel = isEdit ? "Terug naar recept" : "Terug naar kookboek";
   const backAttr = isEdit ? `data-back-detail` : `data-nav="home"`;
 
+  const heroIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
+
   containerEl.innerHTML = `
     <section class="block">
       <div class="container">
-        <div class="page-head">
-          <div>
+        <div class="page-hero">
+          <div class="page-hero-icon tint-lavender">${heroIcon}</div>
+          <div class="page-hero-text">
             <h1>${heading}</h1>
             <p>${sub}</p>
           </div>
-          <button class="btn btn-ghost" ${backAttr}>${backLabel}</button>
+          <button class="btn btn-ghost page-hero-action" ${backAttr}>${backLabel}</button>
         </div>
 
         ${tabs}
