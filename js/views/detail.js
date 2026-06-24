@@ -158,6 +158,10 @@ function render() {
 
             ${r.tips ? `<div class="recipe-section"><h2>Tip</h2><p>${escapeHtml(r.tips)}</p></div>` : ""}
 
+            <div class="recipe-section" id="pairing-section">
+              ${renderPairingBlock(r)}
+            </div>
+
             <div id="personal-notes-section">
               ${renderNotesBlock(r.personal_notes || "")}
             </div>
@@ -181,6 +185,7 @@ function render() {
   bindEditAction();
   bindRatingAction();
   bindNotesAction();
+  bindPairingAction();
 }
 
 function renderRatingStars(value, interactive) {
@@ -288,6 +293,129 @@ function bindNotesAction() {
     });
   };
   wireEdit();
+}
+
+// Bier of wijntip. Anke kan haar eigen pairing schrijven, of AI een voorstel laten doen.
+const PAIRING_SYSTEM = `Je bent een ervaren sommelier en bierkenner. Je geeft drankadvies bij gerechten volgens de echte pairing principes:
+- Match de intensiteit van het gerecht met die van de drank, zodat geen van beide de ander overstemt.
+- Werk met aanvulling of juist contrast. Vet en zout vragen om zuur, bubbels of bitterheid die de mond verfrissen.
+- Pittige of hete gerechten vragen om een drank met wat restzoet en lagere alcohol, niet om veel hop of stevige tannines.
+- Zoete gerechten vragen om een drank die minstens even zoet is.
+- Tannines in rode wijn passen bij eiwit en vet, niet bij witte vis of veel zout.
+- Houd rekening met de streek. Wat samen groeit, past vaak samen.
+Geef een concreet en eerlijk advies. Noem bij wijn een druif of stijl, bij bier een bierstijl. Houd het kort, twee tot vier zinnen, en leg in een halve zin uit waarom het past. Schrijf in het Nederlands, zonder opsommingstekens.`;
+
+function renderPairingBlock(r) {
+  const p = (r.drink_pairing || "").trim();
+  if (p) {
+    return `
+      <h2>Bier of wijntip</h2>
+      <p id="pairing-display" style="white-space: pre-line;">${escapeHtml(p)}</p>
+      <div class="personal-notes-actions" style="margin-top: 10px;">
+        <button class="btn btn-secondary" id="btn-edit-pairing">Bewerk tip</button>
+        <button class="btn btn-secondary" data-suggest-pairing>Nieuwe AI suggestie (${CREDIT_COSTS.PAIRING} credit)</button>
+      </div>
+    `;
+  }
+  return `
+    <h2>Bier of wijntip</h2>
+    <p class="muted-text" style="font-style: italic; margin: 0 0 10px;">Nog geen drinktip. Schrijf je eigen pairing of laat AI iets voorstellen.</p>
+    <div class="personal-notes-actions">
+      <button class="btn btn-dark" id="btn-add-pairing">Schrijf je eigen tip</button>
+      <button class="btn btn-secondary" data-suggest-pairing>Laat AI iets voorstellen (${CREDIT_COSTS.PAIRING} credit)</button>
+    </div>
+  `;
+}
+
+function bindPairingAction() {
+  const section = document.getElementById("pairing-section");
+  if (!section) return;
+
+  const editBtn = section.querySelector("#btn-edit-pairing, #btn-add-pairing");
+  if (editBtn) editBtn.addEventListener("click", () => openPairingEditor(section));
+
+  const suggestBtn = section.querySelector("[data-suggest-pairing]");
+  if (suggestBtn) {
+    suggestBtn.addEventListener("click", async () => {
+      const orig = suggestBtn.innerHTML;
+      suggestBtn.disabled = true;
+      suggestBtn.innerHTML = '<span class="spinner"></span> Bezig met proeven...';
+      try {
+        const tip = await suggestPairing(currentRecipe);
+        await supabaseClient.updateRecipe(currentRecipe.id, { drink_pairing: tip });
+        currentRecipe.drink_pairing = tip;
+        section.innerHTML = renderPairingBlock(currentRecipe);
+        bindPairingAction();
+        toast("Drinktip toegevoegd", "success");
+      } catch (err) {
+        toast(err.message || "Suggestie mislukt", "error");
+        suggestBtn.disabled = false;
+        suggestBtn.innerHTML = orig;
+      }
+    });
+  }
+}
+
+function openPairingEditor(section) {
+  const current = currentRecipe.drink_pairing || "";
+  section.innerHTML = `
+    <h2>Bier of wijntip</h2>
+    <textarea id="pairing-input" placeholder="Bijvoorbeeld: een fris blond bier met lichte bitterheid snijdt door het vet van dit gerecht.">${escapeHtml(current)}</textarea>
+    <div class="personal-notes-actions" style="margin-top: 10px;">
+      <button class="btn btn-secondary" id="btn-cancel-pairing">Annuleer</button>
+      <button class="btn btn-dark" id="btn-save-pairing">Bewaar tip</button>
+    </div>
+  `;
+  section.querySelector("#btn-cancel-pairing").addEventListener("click", () => {
+    section.innerHTML = renderPairingBlock(currentRecipe);
+    bindPairingAction();
+  });
+  section.querySelector("#btn-save-pairing").addEventListener("click", async () => {
+    const val = section.querySelector("#pairing-input").value.trim();
+    try {
+      await supabaseClient.updateRecipe(currentRecipe.id, { drink_pairing: val });
+      currentRecipe.drink_pairing = val;
+      section.innerHTML = renderPairingBlock(currentRecipe);
+      bindPairingAction();
+      toast("Drinktip bewaard", "success");
+    } catch (err) {
+      toast(err.message || "Bewaren mislukt", "error");
+    }
+  });
+}
+
+async function suggestPairing(recipe) {
+  const styleKey = recipe.cook_style || "neutraal";
+  const styleLine = styleKey && styleKey !== "neutraal"
+    ? `Kookstijl: ${COOK_STYLES[styleKey]?.label || styleKey}.`
+    : "";
+  const prompt = `Geef een bier of wijntip bij dit gerecht.
+
+Titel: ${recipe.title}
+${recipe.description ? `Omschrijving: ${recipe.description}` : ""}
+${styleLine}
+Ingredienten:
+${(recipe.ingredients || []).join("\n")}
+
+Kies wat het beste past, een bier of een wijn. Twee tot vier zinnen, met een korte waarom.`;
+
+  const result = await supabaseClient.callClaude({
+    system: PAIRING_SYSTEM,
+    messages: [{ role: "user", content: prompt }],
+    maxTokens: 400,
+    actionKind: "pairing",
+    creditCost: CREDIT_COSTS.PAIRING,
+    description: "Bier of wijntip",
+  });
+
+  if (typeof result.credits === "number") {
+    setState({ profile: { ...STATE.profile, credits: result.credits } });
+    updateCreditDisplay();
+  }
+
+  const tip = (result.text || "").trim();
+  if (!tip) throw new Error("Geen suggestie ontvangen");
+  return tip;
 }
 
 function bindShareAction() {

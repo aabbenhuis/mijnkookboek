@@ -31,6 +31,12 @@ export const COOK_STYLES = {
     prompt: `Je kookt in de stijl van Claudia Roden. Traditionele recepten uit het Midden Oosten en de Sefardisch Joodse keuken, doorgegeven binnen families. Eenvoud en respect voor erfgoed. Granaatappel, rozenwater, amandel, kaneel, sinaasappel en specerijen die langzaam vrijkomen.`,
     imageHint: "Mediterranean Sephardic home cooking, brass platters, rose water, almonds, warm spices, candlelit family meal",
   },
+  "sabrina-ghayour": {
+    label: "Sabrina Ghayour",
+    category: "Groenten en mediterraan",
+    prompt: `Je kookt in de stijl van Sabrina Ghayour. Modern Perzisch en Midden Oosters, gul en vol smaak, met groente vaak in de hoofdrol. Veel verse kruiden zoals munt, koriander, dille en peterselie, plus saffraan, sumak, granaatappel, rozenwater, walnoot, yoghurt en geroosterde specerijen. Royale schalen om te delen, makkelijk te bereiden voor thuis, en uitstekend geschikt voor vegetarisch en veganistisch koken.`,
+    imageHint: "modern Persian Middle Eastern feast, saffron, pomegranate seeds, fresh herbs, flatbread, vibrant sharing platters, rustic ceramics",
+  },
 
   "mindy-pelz": {
     label: "Mindy Pelz",
@@ -232,6 +238,19 @@ export const COOK_STYLES = {
     prompt: `Je kookt in de stijl van Sofie Dumont. Modern en gezellig, toegankelijk en met liefde voor familietafels. Frisse smaken, slimme combinaties, niet te lang in de keuken.`,
     imageHint: "modern Belgian family meal, fresh ingredients, bright cozy presentation, approachable home cooking",
   },
+
+  "ajay-kumar": {
+    label: "Ajay Kumar",
+    category: "Wereldkeuken",
+    prompt: `Je kookt in de stijl van Chef Ajay Kumar. Authentieke Indiase thuiskeuken, met de nadruk op Punjabi en Noord Indiase gerechten. Verse ui, tomaat, gember, knoflook en groene chili als basis, en een eigen masala van komijn, koriander, kurkuma, garam masala en gedroogde fenegriek. Curry's, dal, tandoori en rijstgerechten, stap voor stap en goed te doen voor de thuiskok. Geurig, hartig en vol, met diepte uit langzaam gebakken ui en specerijen.`,
+    imageHint: "authentic Indian home cooking, rich curry, fresh coriander, naan bread, copper and brass bowls, warm spices, vibrant masala tones",
+  },
+  "steve-vivaldi": {
+    label: "Steve Vivaldi",
+    category: "Wereldkeuken",
+    prompt: `Je kookt in de stijl van Steve, The Vivaldi Way. Restaurantkwaliteit thuis, met Italiaanse en Griekse wortels en een brede mediterrane hand. Klassieke techniek met een moderne draai. Olijfolie, knoflook, citroen, verse kruiden, goede pasta en risotto, gegrilde vis en zeevruchten, lam en kalfsvlees. Vaak een pangerecht dat eenvoudig oogt maar vol smaak zit. Genereus, hartig en toegankelijk.`,
+    imageHint: "Mediterranean restaurant style home cooking, Italian and Greek dishes, olive oil, grilled seafood, fresh herbs, rustic plating, warm inviting tones",
+  },
 };
 
 // Neutrale beschrijving van de culinaire stroming per kookstijl.
@@ -244,6 +263,7 @@ export const STYLIST_TAGS = {
   "ottolenghi": "Midden-Oosterse fusion",
   "sami-tamimi": "Levantijnse keuken",
   "claudia-roden": "Sefardisch en mediterraan erfgoed",
+  "sabrina-ghayour": "Modern Perzisch en Midden-Oosters",
 
   "mindy-pelz": "Hormoonvriendelijk",
   "mark-hyman": "Anti-inflammatoir",
@@ -285,6 +305,9 @@ export const STYLIST_TAGS = {
   "jeroen-meus": "Bourgondisch Belgisch",
   "piet-huysentruyt": "Klassiek Belgisch",
   "sofie-dumont": "Modern Belgisch",
+
+  "ajay-kumar": "Indiase thuiskeuken",
+  "steve-vivaldi": "Mediterraan, Italiaans en Grieks",
 };
 
 // Helper functie: geeft het label terug dat we tonen in UI.
@@ -315,6 +338,7 @@ export const COOK_STYLE_CATEGORY_ORDER = [
   "Low carb, keto en carnivoor",
   "Franse keuken",
   "Italiaanse keuken",
+  "Wereldkeuken",
   "BBQ en vlees",
   "Social en comfort",
   "Plantaardig",

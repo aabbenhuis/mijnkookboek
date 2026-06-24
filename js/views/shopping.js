@@ -69,7 +69,9 @@ function render() {
 
   const remaining = items.filter(i => !i.checked).length;
   const groups = {};
+  const checkedItems = [];
   items.forEach(i => {
+    if (i.checked) { checkedItems.push(i); return; }
     groups[i.category] = groups[i.category] || [];
     groups[i.category].push(i);
   });
@@ -114,11 +116,26 @@ function render() {
     </div>`;
   });
 
+  if (checkedItems.length) {
+    html += `<div class="shop-cat shop-cat-done"><span class="dot" style="background:#c4c0b7"></span><span>Afgevinkt (${checkedItems.length})</span></div>
+    <div class="shop-group">
+      ${checkedItems.map(i => `
+        <div class="shop-item done" data-shop-id="${i.id}">
+          <input type="checkbox" checked data-shop-check="${i.id}">
+          <span class="label">${escapeHtml(i.text)}</span>
+          <button class="remove" data-shop-remove="${i.id}" title="Verwijderen">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14"/></svg>
+          </button>
+        </div>
+      `).join("")}
+    </div>`;
+  }
+
   html += `
         </div>
         <div class="form-actions" style="margin-top: 24px;">
           <button class="btn btn-secondary" id="btn-export">Kopieer als tekst</button>
-          <button class="btn btn-secondary" id="btn-uncheck">Vinkjes wissen</button>
+          <button class="btn btn-secondary" id="btn-uncheck">Afgevinkte terugzetten</button>
         </div>
       </div>
     </section>

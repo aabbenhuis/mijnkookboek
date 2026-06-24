@@ -15,6 +15,7 @@ export const CREDIT_COSTS = {
   VISION: 1,          // foto inlezen (handgeschreven recept)
   AI_PHOTO: 5,        // AI gegenereerde recept foto
   NUTRITION: 1,       // voedingswaarden berekenen
+  PAIRING: 1,         // bier of wijntip via AI
 };
 
 // Credit pakketten verkocht via Mollie

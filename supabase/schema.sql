@@ -50,6 +50,8 @@ create table if not exists public.recipes (
   nutrition jsonb,
   cook_style text default 'neutraal',
   source text default 'manual',
+  photo_is_ai boolean,
+  drink_pairing text default '',
   language text not null default 'nl',
   is_example boolean not null default false,
   rating integer check (rating is null or (rating between 1 and 5)),
