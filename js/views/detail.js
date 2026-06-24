@@ -296,20 +296,25 @@ function bindNotesAction() {
 }
 
 // Bier of wijntip. Anke kan haar eigen pairing schrijven, of AI een voorstel laten doen.
-const PAIRING_SYSTEM = `Je bent een ervaren sommelier en bierkenner. Je geeft drankadvies bij gerechten volgens de echte pairing principes:
+const PAIRING_SYSTEM = `Je bent een ervaren sommelier en bierkenner. Geef bij elk gerecht altijd twee suggesties: eerst een bier, daarna een wijn. Volg de echte pairing principes:
 - Match de intensiteit van het gerecht met die van de drank, zodat geen van beide de ander overstemt.
 - Werk met aanvulling of juist contrast. Vet en zout vragen om zuur, bubbels of bitterheid die de mond verfrissen.
 - Pittige of hete gerechten vragen om een drank met wat restzoet en lagere alcohol, niet om veel hop of stevige tannines.
 - Zoete gerechten vragen om een drank die minstens even zoet is.
 - Tannines in rode wijn passen bij eiwit en vet, niet bij witte vis of veel zout.
 - Houd rekening met de streek. Wat samen groeit, past vaak samen.
-Geef een concreet en eerlijk advies. Noem bij wijn een druif of stijl, bij bier een bierstijl. Houd het kort, twee tot vier zinnen, en leg in een halve zin uit waarom het past. Schrijf in het Nederlands, zonder opsommingstekens.`;
+Noem bij het bier een concrete bierstijl en bij de wijn een druif of stijl, met telkens in een halve zin waarom het past. Houd elke suggestie kort, een of twee zinnen.
+Geef je antwoord precies in deze opmaak, zonder sterretjes of andere opmaaktekens:
+Bier: <jouw biersuggestie met korte waarom>
+
+Wijn: <jouw wijnsuggestie met korte waarom>
+Schrijf in het Nederlands.`;
 
 function renderPairingBlock(r) {
   const p = (r.drink_pairing || "").trim();
   if (p) {
     return `
-      <h2>Bier of wijntip</h2>
+      <h2>Bier en wijntip</h2>
       <p id="pairing-display" style="white-space: pre-line;">${escapeHtml(p)}</p>
       <div class="personal-notes-actions" style="margin-top: 10px;">
         <button class="btn btn-secondary" id="btn-edit-pairing">Bewerk tip</button>
@@ -318,7 +323,7 @@ function renderPairingBlock(r) {
     `;
   }
   return `
-    <h2>Bier of wijntip</h2>
+    <h2>Bier en wijntip</h2>
     <p class="muted-text" style="font-style: italic; margin: 0 0 10px;">Nog geen drinktip. Schrijf je eigen pairing of laat AI iets voorstellen.</p>
     <div class="personal-notes-actions">
       <button class="btn btn-dark" id="btn-add-pairing">Schrijf je eigen tip</button>
@@ -359,7 +364,7 @@ function bindPairingAction() {
 function openPairingEditor(section) {
   const current = currentRecipe.drink_pairing || "";
   section.innerHTML = `
-    <h2>Bier of wijntip</h2>
+    <h2>Bier en wijntip</h2>
     <textarea id="pairing-input" placeholder="Bijvoorbeeld: een fris blond bier met lichte bitterheid snijdt door het vet van dit gerecht.">${escapeHtml(current)}</textarea>
     <div class="personal-notes-actions" style="margin-top: 10px;">
       <button class="btn btn-secondary" id="btn-cancel-pairing">Annuleer</button>
@@ -397,12 +402,12 @@ ${styleLine}
 Ingredienten:
 ${(recipe.ingredients || []).join("\n")}
 
-Kies wat het beste past, een bier of een wijn. Twee tot vier zinnen, met een korte waarom.`;
+Geef een biertip en een wijntip, met de biertip bovenaan.`;
 
   const result = await supabaseClient.callClaude({
     system: PAIRING_SYSTEM,
     messages: [{ role: "user", content: prompt }],
-    maxTokens: 400,
+    maxTokens: 500,
     actionKind: "pairing",
     creditCost: CREDIT_COSTS.PAIRING,
     description: "Bier of wijntip",
