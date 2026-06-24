@@ -304,10 +304,10 @@ const PAIRING_SYSTEM = `Je bent een ervaren sommelier en bierkenner. Geef bij el
 - Tannines in rode wijn passen bij eiwit en vet, niet bij witte vis of veel zout.
 - Houd rekening met de streek. Wat samen groeit, past vaak samen.
 Noem bij het bier een concrete bierstijl en bij de wijn een druif of stijl, met telkens in een halve zin waarom het past. Houd elke suggestie kort, een of twee zinnen.
-Geef je antwoord precies in deze opmaak, zonder sterretjes of andere opmaaktekens:
-Bier: <jouw biersuggestie met korte waarom>
+Geef je antwoord precies in deze opmaak, zonder sterretjes of andere opmaaktekens. Begin elke regel direct met de naam in een of twee woorden, dus geen "een" ervoor, dan een komma, dan de korte waarom:
+Bier: <bierstijl>, <korte waarom in een halve zin>
 
-Wijn: <jouw wijnsuggestie met korte waarom>
+Wijn: <druif of stijl>, <korte waarom in een halve zin>
 Schrijf in het Nederlands.`;
 
 function renderPairingBlock(r) {

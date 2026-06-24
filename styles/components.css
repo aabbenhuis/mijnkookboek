@@ -329,6 +329,20 @@ section.block.compact { padding: var(--s-section) 0; }
   display: inline-flex; align-items: center; gap: 3px;
 }
 
+/* Bier en wijntip op de receptkaart */
+.card-pairing-row {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-top: 8px;
+}
+.card-pairing {
+  font-size: 11px; font-weight: 600;
+  padding: 3px 9px; border-radius: var(--r-full);
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.card-pairing svg { width: 13px; height: 13px; flex: 0 0 auto; }
+.card-pairing.beer { background: var(--card-tint-peach, #FFE8D4); color: #9a5a12; }
+.card-pairing.wine { background: var(--card-tint-rose, #FDE0EC); color: #a83a5b; }
+
 .card-tags-subtle {
   display: flex; flex-wrap: wrap; gap: 8px;
   margin-top: 6px;
