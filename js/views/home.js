@@ -298,7 +298,7 @@ function cleanPairingLabel(s) {
   if (!s) return null;
   let x = s.trim().replace(/[.;:]+$/, "");
   x = x.replace(/^(een|de|het)\s+/i, "");
-  x = x.split(/\s+(?:zoals|uit|van|met)\s+/i)[0].trim();
+  x = x.split(/\s+(?:zoals|uit|van|met|of|en)\s+/i)[0].trim();
   if (x.length > 26) x = x.slice(0, 26).trim();
   return x || null;
 }
