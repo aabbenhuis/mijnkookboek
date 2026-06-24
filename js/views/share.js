@@ -128,6 +128,14 @@ function renderRecipeShare(r, owner) {
 
               ${r.tips ? `<div class="recipe-section"><h2>Tip</h2><p>${escapeHtml(r.tips)}</p></div>` : ""}
 
+              ${r.drink_pairing && r.drink_pairing.trim() ? `
+                <div class="recipe-section">
+                  <h2>Bier en wijntip</h2>
+                  ${sharePairingChips(r.drink_pairing)}
+                  <p style="white-space: pre-line;">${escapeHtml(r.drink_pairing)}</p>
+                </div>
+              ` : ""}
+
               ${includeNotes && r.personal_notes && r.personal_notes.trim() ? `
                 <div class="personal-notes-block">
                   <h3>Notitie van ${escapeHtml(owner.firstName)}</h3>
@@ -237,6 +245,36 @@ function renderSharedStars(value, name) {
   }
   html += `</div><span class="rating-stars-label">Beoordeling van ${escapeHtml(name)}</span>`;
   return html;
+}
+
+// Bier en wijntip in de gedeelde weergave: zelfde korte labels als op de kaart
+const SHARE_BEER_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9h9v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M15 11h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 9c0-1.7 1.3-3 4.5-3S15 7.3 15 9"/></svg>`;
+const SHARE_WINE_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M7 3h10l-.7 5.5a4.4 4.4 0 0 1-8.6 0z"/></svg>`;
+
+function cleanPairingLabel(s) {
+  if (!s) return null;
+  let x = s.trim().replace(/[.;:]+$/, "");
+  x = x.replace(/^(een|de|het)\s+/i, "");
+  x = x.split(/\s+(?:zoals|uit|van|met|of|en)\s+/i)[0].trim();
+  if (x.length > 26) x = x.slice(0, 26).trim();
+  return x || null;
+}
+
+function parseSharePairing(text) {
+  if (!text) return null;
+  const grab = (re) => { const m = text.match(re); return m ? cleanPairingLabel(m[1]) : null; };
+  const beer = grab(/Bier:\s*([^\n,.]+)/i);
+  const wine = grab(/Wijn:\s*([^\n,.]+)/i);
+  if (!beer && !wine) return null;
+  return { beer, wine };
+}
+
+function sharePairingChips(text) {
+  const p = parseSharePairing(text);
+  if (!p) return "";
+  const beer = p.beer ? `<span class="card-pairing beer">${SHARE_BEER_ICON}${escapeHtml(p.beer)}</span>` : "";
+  const wine = p.wine ? `<span class="card-pairing wine">${SHARE_WINE_ICON}${escapeHtml(p.wine)}</span>` : "";
+  return `<div class="card-pairing-row" style="margin-bottom: 12px;">${beer}${wine}</div>`;
 }
 
 function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
