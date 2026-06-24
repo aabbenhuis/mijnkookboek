@@ -312,6 +312,7 @@ Bieren van Royal Swinkels Family Brewers, een Nederlands brouwerijconcern. Als d
 - Rodenbach: Vlaams roodbruin zuurbier met een zoetzure balans, snijdt door vet, mooi bij rijke en vette gerechten en bij zoetzuur.
 - PALM: Belgische amber ale, moutig, bij klassieke vleesgerechten en kaas.
 - Cornet: stevig blond met een vanille en eiken toets, bij gerechten met uitgesproken smaken.
+- Uiltje, ambachtelijk uit Haarlem: hoppige IPA en pale ale bij stevig gegrild vlees, burgers, gefrituurd en pittige kaas, en imperial stout bij chocoladedessert en rijk gestoofd vlees.
 - Bavaria Pilsener of Swinckels': frisse pils, bij gefrituurd, licht en pittig eten.
 
 Noem bij het bier eerst de bierstijl, daarna in de waarom eventueel een concreet bier. Bij de wijn noem je een druif of stijl, eventueel met een streek als voorbeeld. Houd elke suggestie kort, een of twee zinnen.
