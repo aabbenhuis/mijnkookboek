@@ -291,14 +291,23 @@ function sourceChipHtml(r, variant) {
 const BEER_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9h9v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M15 11h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 9c0-1.7 1.3-3 4.5-3S15 7.3 15 9"/></svg>`;
 const WINE_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M7 3h10l-.7 5.5a4.4 4.4 0 0 1-8.6 0z"/></svg>`;
 
+// Maak van een zin een kort label: haal een lidwoord vooraan weg en kap af
+// bij woorden als "zoals" of "uit", zodat "Een Belgische witbier zoals Hoegaarden"
+// op de kaart "Belgische witbier" wordt.
+function cleanPairingLabel(s) {
+  if (!s) return null;
+  let x = s.trim().replace(/[.;:]+$/, "");
+  x = x.replace(/^(een|de|het)\s+/i, "");
+  x = x.split(/\s+(?:zoals|uit|van|met)\s+/i)[0].trim();
+  if (x.length > 26) x = x.slice(0, 26).trim();
+  return x || null;
+}
+
 function parsePairing(text) {
   if (!text) return null;
   const grab = (re) => {
     const m = text.match(re);
-    if (!m) return null;
-    let s = m[1].trim().replace(/[.;:]+$/, "");
-    if (s.length > 28) s = s.slice(0, 28).trim();
-    return s || null;
+    return m ? cleanPairingLabel(m[1]) : null;
   };
   const beer = grab(/Bier:\s*([^\n,.]+)/i);
   const wine = grab(/Wijn:\s*([^\n,.]+)/i);
