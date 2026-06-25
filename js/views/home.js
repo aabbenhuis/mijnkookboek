@@ -96,7 +96,7 @@ function renderList(firstName, count) {
         <div id="featured" class="home-featured"></div>
 
         <div class="search-row">
-          <input class="search-input" id="search-input" placeholder="Zoek op titel of ingredient" />
+          <input class="search-input" id="search-input" placeholder="Zoek op titel, ingredient, trefwoord of kenmerk" />
           <select id="filter-meal" class="search-input" style="max-width: 180px"></select>
           <select id="filter-style" class="search-input" style="max-width: 220px"></select>
           <button class="btn btn-secondary" id="btn-more-filters">Meer filters</button>
@@ -234,7 +234,23 @@ function applyFilter() {
       if (!matchesAll) return false;
     }
     if (!q) return true;
-    const hay = (r.title + " " + (r.description || "") + " " + (r.ingredients || []).join(" ")).toLowerCase();
+    // Doorzoek alle tekst van een recept: titel, ingredienten, tags, dieet,
+    // maaltijd en gerechttype, kookstijl, de bier en wijntip, en de tip.
+    const ds = getDisplayCookStyle(r.cook_style);
+    const cookText = ds ? `${ds.primary || ""} ${ds.stylistTag || ""}` : "";
+    const dietText = (r.diet || []).map(k => { const d = getDiet(k); return d ? `${k} ${d.label}` : k; }).join(" ");
+    const hay = [
+      r.title,
+      r.description || "",
+      (r.ingredients || []).join(" "),
+      (r.tags || []).join(" "),
+      dietText,
+      r.meal_type || "",
+      (r.dish_type || []).join(" "),
+      cookText,
+      r.drink_pairing || "",
+      r.tips || "",
+    ].join(" ").toLowerCase();
     return hay.includes(q);
   });
 
