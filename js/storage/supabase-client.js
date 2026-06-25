@@ -311,6 +311,11 @@ export async function callOpenAIImage({ prompt, quality = "medium", size = "1024
   return invokeFunction("openai-image", { prompt, quality, size });
 }
 
+// Haalt de receptinhoud van een webpagina op, zodat de AI er een recept van kan maken
+export async function readFromLink(url) {
+  return invokeFunction("read-from-link", { url });
+}
+
 // ============================================================
 // SHARE LINKS
 // ============================================================

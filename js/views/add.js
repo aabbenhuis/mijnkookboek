@@ -17,6 +17,7 @@ let pendingPhotoDataUrl = null;
 let chatHistory = [];
 let aiPreviewRecipe = null;
 let photoPreviewRecipe = null;
+let linkPreviewRecipe = null;
 let editRecipe = null;
 
 export async function mount(container, params = {}) {
@@ -26,6 +27,7 @@ export async function mount(container, params = {}) {
   chatHistory = [];
   aiPreviewRecipe = null;
   photoPreviewRecipe = null;
+  linkPreviewRecipe = null;
   editRecipe = null;
   aiSubTab = "form";
   updateActiveNav("add");
@@ -58,6 +60,7 @@ function render() {
          <button class="method-tab ${activeTab === "manual" ? "active" : ""}" data-tab="manual"><img src="assets/icon-cook.svg" alt="" /><span>Zelf invullen</span></button>
          <button class="method-tab ${activeTab === "ai" ? "active" : ""}" data-tab="ai"><img src="assets/icon-sparkle.svg" alt="" /><span>Met AI</span></button>
          <button class="method-tab ${activeTab === "photo" ? "active" : ""}" data-tab="photo"><img src="assets/icon-camera.svg" alt="" /><span>Uit foto</span></button>
+         <button class="method-tab ${activeTab === "link" ? "active" : ""}" data-tab="link"><img src="assets/icon-link.svg" alt="" /><span>Uit een link</span></button>
        </div>`;
   const backNav = isEdit ? `detail` : `home`;
   const backLabel = isEdit ? "Terug naar recept" : "Terug naar kookboek";
@@ -105,6 +108,7 @@ function renderTabContent() {
   if (activeTab === "manual") renderManualTab(target);
   else if (activeTab === "ai") renderAITab(target);
   else if (activeTab === "photo") renderPhotoTab(target);
+  else if (activeTab === "link") renderLinkTab(target);
 }
 
 // ============================================================
@@ -771,6 +775,72 @@ async function handlePhotoRead() {
 }
 
 // ============================================================
+// LINK TAB
+// ============================================================
+
+function renderLinkTab(target) {
+  target.innerHTML = `
+    <div class="stack lg" style="max-width: 720px">
+      <div class="field">
+        <label>Link naar een recept</label>
+        <input type="url" id="link-url-input" placeholder="https://..." style="width:100%" />
+        <p class="hint">Plak een link van een receptenwebsite. Wij lezen het recept uit en zetten het netjes in je kookboek, in het Nederlands. Instagram en TikTok werken nog niet.</p>
+      </div>
+      <div class="row">
+        <button class="btn btn-primary" id="btn-read-link">Lees recept uit link (${CREDIT_COSTS.GENERATE} credit)</button>
+        <button class="btn btn-secondary" data-nav="home">Annuleer</button>
+      </div>
+      <div id="link-result" style="margin-top: 24px"></div>
+    </div>
+  `;
+
+  document.getElementById("btn-read-link").addEventListener("click", handleLinkRead);
+  document.getElementById("link-url-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); handleLinkRead(); }
+  });
+}
+
+async function handleLinkRead() {
+  const input = document.getElementById("link-url-input");
+  const url = (input.value || "").trim();
+  if (!/^https?:\/\//i.test(url)) { toast("Plak een geldige link die met http begint", "error"); return; }
+
+  const btn = document.getElementById("btn-read-link");
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Bezig met lezen...';
+
+  try {
+    const fetched = await supabaseClient.readFromLink(url);
+    if (!fetched?.content) throw new Error("Kon geen recept van deze link halen");
+
+    const result = await supabaseClient.callClaude({
+      system: recipeJsonSystem("neutraal"),
+      messages: [{ role: "user", content: `Hieronder staat de inhoud van een receptpagina. Zet het om in het JSON formaat. Vertaal naar het Nederlands als het in een andere taal staat. Schat de bereidingstijd en porties als ze ontbreken. Verzin geen ingredienten of stappen die er niet staan.\n\n${fetched.content}` }],
+      maxTokens: 2000,
+      actionKind: "link-import",
+      creditCost: CREDIT_COSTS.GENERATE,
+      description: "Recept uit een link",
+    });
+
+    if (typeof result.credits === "number") {
+      setState({ profile: { ...STATE.profile, credits: result.credits } });
+      updateCreditDisplay();
+    }
+
+    const recipe = extractJson(result.text);
+    recipe.cookStyle = "neutraal";
+    linkPreviewRecipe = recipe;
+    showRecipePreview(recipe, "link-result");
+  } catch (err) {
+    toast(err.message || "Recept uit link lezen mislukt", "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+}
+
+// ============================================================
 // SHARED: Recipe preview + save
 // ============================================================
 
@@ -821,13 +891,16 @@ function showRecipePreview(recipe, containerId) {
   const bindPreviewActions = () => {
     c.querySelector("[data-save-recipe]")?.addEventListener("click", async () => {
       const toSave = normalizeRecipe(recipe);
-      const sourceKind = containerId.includes("photo") ? "photo" : (containerId.includes("chat") ? "ai-chat" : "ai-form");
+      const sourceKind = containerId.includes("photo") ? "photo"
+        : containerId.includes("link") ? "link"
+        : (containerId.includes("chat") ? "ai-chat" : "ai-form");
       toSave.source = sourceKind;
       await saveRecipeFromForm(toSave, null, null);
       c.innerHTML = "";
       c.style.display = "none";
       aiPreviewRecipe = null;
       photoPreviewRecipe = null;
+      linkPreviewRecipe = null;
       chatHistory = [];
     });
     c.querySelector("[data-discard-recipe]")?.addEventListener("click", () => {

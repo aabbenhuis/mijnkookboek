@@ -70,7 +70,7 @@
 .field-row { display: grid; gap: var(--s-md); grid-template-columns: 1fr 1fr; }
 label { font-size: 14px; font-weight: 500; color: var(--charcoal); }
 .hint { font-size: 13px; color: var(--steel); margin-top: 2px; }
-input[type="text"], input[type="email"], input[type="number"], input[type="password"], textarea, select {
+input[type="text"], input[type="email"], input[type="number"], input[type="password"], input[type="url"], textarea, select {
   background: var(--canvas); color: var(--ink);
   border: 1px solid var(--hairline-strong);
   border-radius: var(--r-md);
