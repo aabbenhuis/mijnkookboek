@@ -105,6 +105,8 @@ function renderRecipeShare(r, owner) {
                 ${r.servings ? `<span class="meta-pill">${r.servings} porties</span>` : ""}
               </div>
 
+              ${sharePairingChips(r.drink_pairing)}
+
               ${(r.diet && r.diet.length) ? `<div class="diet-badges" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">${r.diet.map(k => {
                 const d = getDiet(k);
                 return d ? `<span class="diet-badge tint-${d.color}">${d.icon} ${escapeHtml(d.label)}</span>` : "";
@@ -131,7 +133,6 @@ function renderRecipeShare(r, owner) {
               ${r.drink_pairing && r.drink_pairing.trim() ? `
                 <div class="recipe-section">
                   <h2>Bier en wijntip</h2>
-                  ${sharePairingChips(r.drink_pairing)}
                   <p style="white-space: pre-line;">${escapeHtml(r.drink_pairing)}</p>
                 </div>
               ` : ""}

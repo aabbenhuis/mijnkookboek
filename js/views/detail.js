@@ -121,6 +121,8 @@ function render() {
               </span>
             </div>
 
+            ${pairingChipsHtml(r)}
+
             ${(r.diet && r.diet.length) ? `<div class="diet-badges" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">${r.diet.map(k => {
               const d = getDiet(k);
               return d ? `<span class="diet-badge tint-${d.color}">${d.icon} ${escapeHtml(d.label)}</span>` : "";
@@ -310,6 +312,31 @@ Bier: <bierstijl>, <korte waarom, eventueel met een concreet bier>
 
 Wijn: <druif of stijl>, <korte waarom, eventueel met een voorbeeld>
 Schrijf in het Nederlands.`;
+
+// Korte labels van de bier en wijntip als chips, voor bovenaan naast de andere badges.
+const PAIR_BEER_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9h9v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M15 11h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 9c0-1.7 1.3-3 4.5-3S15 7.3 15 9"/></svg>`;
+const PAIR_WINE_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M7 3h10l-.7 5.5a4.4 4.4 0 0 1-8.6 0z"/></svg>`;
+
+function cleanPairingLabel(s) {
+  if (!s) return null;
+  let x = s.trim().replace(/[.;:]+$/, "");
+  x = x.replace(/^(een|de|het)\s+/i, "");
+  x = x.split(/\s+(?:zoals|uit|van|met|of|en)\s+/i)[0].trim();
+  if (x.length > 26) x = x.slice(0, 26).trim();
+  return x || null;
+}
+
+function pairingChipsHtml(r) {
+  const text = r.drink_pairing || "";
+  if (!text.trim()) return "";
+  const grab = (re) => { const m = text.match(re); return m ? cleanPairingLabel(m[1]) : null; };
+  const beer = grab(/Bier:\s*([^\n,.]+)/i);
+  const wine = grab(/Wijn:\s*([^\n,.]+)/i);
+  if (!beer && !wine) return "";
+  const beerC = beer ? `<span class="card-pairing beer">${PAIR_BEER_ICON}${escapeHtml(beer)}</span>` : "";
+  const wineC = wine ? `<span class="card-pairing wine">${PAIR_WINE_ICON}${escapeHtml(wine)}</span>` : "";
+  return `<div class="card-pairing-row" style="margin-bottom: 16px;">${beerC}${wineC}</div>`;
+}
 
 function renderPairingBlock(r) {
   const p = (r.drink_pairing || "").trim();
