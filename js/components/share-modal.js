@@ -2,6 +2,7 @@
 
 import * as supabaseClient from "../storage/supabase-client.js";
 import { toast } from "./toast.js";
+import { STATE } from "../state.js";
 
 let backdrop = null;
 
@@ -71,7 +72,8 @@ export async function showShareModal({ scope, targetId, title, hasNotes = false 
     const refreshUrl = () => {
       const url = buildUrl(slug);
       urlEl.value = url;
-      const shareText = scope === "recipe" ? `Ik deel mijn recept: ${title}` : "Bekijk mijn kookboek";
+      const naam = STATE.profile?.first_name || "Ik";
+      const shareText = scope === "recipe" ? `${naam} deelt ${title} met je` : `${naam} deelt het kookboek met je`;
       socialEl.innerHTML = `
         <a class="btn btn-secondary" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(shareText + " " + url)}">WhatsApp</a>
         <a class="btn btn-secondary" target="_blank" rel="noopener" href="mailto:?subject=${encodeURIComponent(shareText)}&body=${encodeURIComponent(shareText + "\n\n" + url)}">Mail</a>
