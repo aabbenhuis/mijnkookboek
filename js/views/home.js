@@ -348,7 +348,6 @@ function featuredCardHtml(r) {
     <button class="featured-card" data-recipe-id="${r.id}">
       <div class="featured-photo ${hasPhoto ? "" : "placeholder"}" ${style}>
         <span class="featured-badge">Nieuwste recept</span>
-        ${sourceChipHtml(r, "featured")}
         <div class="featured-overlay">
           <h3>${escapeHtml(r.title)}</h3>
           ${meta ? `<span>${escapeHtml(meta)}</span>` : ""}
@@ -443,7 +442,6 @@ function recipeCardHtml(r) {
   return `
     <div class="recipe-card" data-recipe-id="${r.id}">
       <div class="recipe-image ${photoUrl ? "" : "placeholder"}" ${photoUrl ? `style="background-image:url('${photoUrl}')"` : ""}>
-        ${sourceChipHtml(r)}
         ${photoUrl ? "" : (r.meal_type || "Recept")}
       </div>
       <div class="recipe-body">
