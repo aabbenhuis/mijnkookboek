@@ -924,7 +924,7 @@ button.credit-pill:hover { background: var(--card-tint-yellow); }
 .home-count { font-size: 14px; color: var(--steel); margin: 0; }
 .home-hello-deco { position: absolute; right: -6px; bottom: -16px; opacity: 0.15; pointer-events: none; }
 
-.home-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.home-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
 .home-tile {
   border: 1px solid var(--hairline); border-radius: var(--r-lg);
   padding: 16px 8px; cursor: pointer;
@@ -937,6 +937,7 @@ button.credit-pill:hover { background: var(--card-tint-yellow); }
 .home-tile.tint-cream { background: var(--card-tint-cream); }
 .home-tile.tint-mint { background: var(--card-tint-mint); }
 .home-tile.tint-lavender { background: var(--card-tint-lavender); }
+.home-tile.tint-rose { background: var(--card-tint-rose); }
 
 .home-featured { margin-bottom: 24px; }
 .featured-card {
@@ -978,7 +979,7 @@ button.credit-pill:hover { background: var(--card-tint-yellow); }
 .shop-cat .dot { display: inline-block; vertical-align: middle; width: 10px; height: 10px; border-radius: 50%; margin-right: 9px; position: relative; top: -1px; }
 
 /* ===== Methode tegels (Nieuw recept) ===== */
-.method-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 26px; }
+.method-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 26px; }
 .method-tab {
   border: 1.5px solid var(--hairline); border-radius: var(--r-lg); background: var(--canvas);
   padding: 15px 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 9px;
@@ -988,6 +989,12 @@ button.credit-pill:hover { background: var(--card-tint-yellow); }
 .method-tab img { width: 28px; height: 28px; display: block; }
 .method-tab span { font-size: 13px; font-weight: 600; color: var(--charcoal); }
 .method-tab.active { border-color: var(--primary); background: var(--card-tint-lavender); }
+
+/* Mobiel: vier tegels en tabbladen netjes als 2 bij 2 */
+@media (max-width: 520px) {
+  .home-tiles { grid-template-columns: repeat(2, 1fr); }
+  .method-tabs { grid-template-columns: repeat(2, 1fr); }
+}
 
 /* ===== Instellingen kaart kop ===== */
 .setting-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }

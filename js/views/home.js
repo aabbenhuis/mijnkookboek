@@ -91,6 +91,7 @@ function renderList(firstName, count) {
           <button class="home-tile tint-cream" data-add-tab="manual"><img src="assets/icon-cook.svg" alt="" /><span>Zelf</span></button>
           <button class="home-tile tint-mint" data-add-tab="ai"><img src="assets/icon-sparkle.svg" alt="" /><span>Met AI</span></button>
           <button class="home-tile tint-lavender" data-add-tab="photo"><img src="assets/icon-camera.svg" alt="" /><span>Uit foto</span></button>
+          <button class="home-tile tint-rose" data-add-tab="link"><img src="assets/icon-link.svg" alt="" /><span>Uit link</span></button>
         </div>
 
         <div id="featured" class="home-featured"></div>

@@ -830,6 +830,10 @@ async function handleLinkRead() {
 
     const recipe = extractJson(result.text);
     recipe.cookStyle = "neutraal";
+    // Als de website een foto bij het recept had, tonen we die alvast en bewaren we hem mee
+    if (fetched.imageBase64 && fetched.imageMime) {
+      recipe.photoUrl = `data:${fetched.imageMime};base64,${fetched.imageBase64}`;
+    }
     linkPreviewRecipe = recipe;
     showRecipePreview(recipe, "link-result");
   } catch (err) {
@@ -895,7 +899,12 @@ function showRecipePreview(recipe, containerId) {
         : containerId.includes("link") ? "link"
         : (containerId.includes("chat") ? "ai-chat" : "ai-form");
       toSave.source = sourceKind;
-      await saveRecipeFromForm(toSave, null, null);
+      // Foto van een website meenemen: comprimeren en mee opslaan
+      let photoBlob = null;
+      if (typeof recipe.photoUrl === "string" && recipe.photoUrl.startsWith("data:")) {
+        try { photoBlob = await compressDataUrlToBlob(recipe.photoUrl); } catch {}
+      }
+      await saveRecipeFromForm(toSave, photoBlob, null);
       c.innerHTML = "";
       c.style.display = "none";
       aiPreviewRecipe = null;
