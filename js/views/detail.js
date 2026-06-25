@@ -69,15 +69,6 @@ function render() {
     photoOrigin = `<div class="photo-origin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${pIcon}</svg>${isAi ? "AI foto" : "Eigen foto"}</div>`;
   }
 
-  // Eigen foto is gratis en de natuurlijke hoofdoptie, AI foto is een betaalde extra
-  const uploadBtn = r.photo_url
-    ? `<button class="btn btn-secondary" data-detail-upload>Vervang door eigen foto</button>`
-    : `<button class="btn btn-dark" data-detail-upload>Eigen foto toevoegen (gratis)</button>`;
-  const aiPhotoBtn = r.photo_url
-    ? `<button class="btn btn-secondary" data-detail-regen-image>Vervang met AI foto (${CREDIT_COSTS.AI_PHOTO} credits)</button>`
-    : `<button class="btn btn-secondary" data-detail-gen-image>Of laat AI een foto maken (${CREDIT_COSTS.AI_PHOTO} credits)</button>`;
-  const photoActions = `<div style="display: grid; gap: 8px; margin-top: 12px;">${uploadBtn}${aiPhotoBtn}</div>`;
-
   containerEl.innerHTML = `
     <section class="block">
       <div class="container">
@@ -105,7 +96,6 @@ function render() {
               ? `<div class="photo" style="background-image:url('${r.photo_url}')"></div>`
               : `<div class="photo">Geen foto</div>`}
             ${photoOrigin}
-            ${photoActions}
           </div>
           <div>
             ${sourceChip}
@@ -180,7 +170,6 @@ function render() {
   bindDelete();
   bindShopping();
   bindNutritionAction();
-  bindPhotoActions();
   bindShareAction();
   bindEditAction();
   bindRatingAction();

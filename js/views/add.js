@@ -6,7 +6,7 @@ import { toast } from "../components/toast.js";
 import { updateActiveNav, updateCreditDisplay } from "../components/app-shell.js";
 import { showView } from "../router.js";
 import { PHOTO_MAX_DIM, PHOTO_QUALITY, PHOTO_MAX_UPLOAD_MB, CREDIT_COSTS } from "../config.js";
-import { populateCookStyleDropdown, cookStyleBlock } from "../data/cook-styles.js";
+import { populateCookStyleDropdown, cookStyleBlock, getImageHint } from "../data/cook-styles.js";
 import { MEAL_TYPES, DISH_TYPES, DIETS } from "../data/categories.js";
 
 let containerEl = null;
@@ -201,6 +201,12 @@ function renderManualTab(target) {
           <input type="file" accept="image/*" id="manual-file-input" style="display:none" />
           <img id="manual-preview" class="upload-preview" style="display:${existingPhoto ? "block" : "none"}" ${existingPhoto ? `src="${escapeAttr(existingPhoto)}"` : ""} />
         </div>
+        ${isEdit
+          ? `<div style="margin-top: 10px;">
+               <button type="button" class="btn btn-secondary" id="manual-ai-photo">Laat AI een foto maken (${CREDIT_COSTS.AI_PHOTO} credits)</button>
+               <p class="hint">De AI maakt een foto op basis van de titel en de ingredienten. Een eigen foto hierboven heeft altijd voorrang.</p>
+             </div>`
+          : `<p class="hint" style="margin-top: 8px;">Een AI foto kun je toevoegen nadat je het recept hebt bewaard. Open het dan en kies Bewerk.</p>`}
       </div>
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">${submitLabel}</button>
@@ -213,6 +219,11 @@ function renderManualTab(target) {
     pendingPhotoBlob = blob;
     pendingPhotoDataUrl = dataUrl;
   });
+
+  if (isEdit) {
+    const aiPhotoBtn = document.getElementById("manual-ai-photo");
+    if (aiPhotoBtn) aiPhotoBtn.addEventListener("click", () => handleAiPhoto(aiPhotoBtn));
+  }
 
   const cancelBtn = document.querySelector(`[data-cancel-${cancelTarget}]`);
   if (cancelBtn) {
@@ -276,6 +287,99 @@ async function updateExistingRecipe(data, photoBlob, submitBtn) {
       submitBtn.innerHTML = orig;
     }
   }
+}
+
+// AI foto laten maken bij een bestaand recept, vanuit het bewerkscherm.
+// De foto wordt meteen bij het recept opgeslagen en in de preview getoond.
+async function handleAiPhoto(btn) {
+  if (!editRecipe) return;
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Bezig met genereren...';
+  try {
+    const photoUrl = await generateAiPhotoForRecipe(editRecipe);
+    await supabaseClient.updateRecipe(editRecipe.id, { photo_url: photoUrl, photo_is_ai: true });
+    editRecipe.photo_url = photoUrl;
+    editRecipe.photo_is_ai = true;
+    pendingPhotoBlob = null;
+    pendingPhotoDataUrl = null;
+    const prev = document.getElementById("manual-preview");
+    if (prev) { prev.src = photoUrl; prev.style.display = "block"; }
+    toast("AI foto opgeslagen bij recept", "success");
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  } catch (err) {
+    toast(err.message || "AI foto genereren mislukt", "error");
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+}
+
+async function generateAiPhotoForRecipe(recipe) {
+  const styleKey = recipe.cook_style || "neutraal";
+  const hint = getImageHint(styleKey);
+  const topIngredients = (recipe.ingredients || []).slice(0, 5).map(i => i.replace(/^\d+[^a-zA-Z]*/, "")).join(", ");
+  const desc = recipe.description ? `${recipe.description}. ` : "";
+  const prompt = `Professional overhead food photography of ${recipe.title}. ${desc}Visible ingredients include ${topIngredients}. Style: ${hint}. Shot from above on a rustic surface, natural daylight, shallow depth of field, soft shadows, no text, no labels, no people, square composition.`;
+
+  const result = await supabaseClient.callOpenAIImage({ prompt, quality: "medium", size: "1024x1024" });
+
+  if (typeof result.credits === "number") {
+    setState({ profile: { ...STATE.profile, credits: result.credits } });
+    updateCreditDisplay();
+  }
+
+  let rawDataUrl;
+  if (result.b64) rawDataUrl = "data:image/png;base64," + result.b64;
+  else if (result.url) rawDataUrl = await urlToDataUrl(result.url);
+  else throw new Error("Geen afbeelding ontvangen");
+
+  const compressedBlob = await compressDataUrlToBlob(rawDataUrl);
+  return await supabaseClient.uploadRecipePhoto(recipe.id, compressedBlob, "jpg");
+}
+
+async function urlToDataUrl(url) {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext("2d").drawImage(img, 0, 0);
+        resolve(canvas.toDataURL("image/jpeg", 0.9));
+      };
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+}
+
+function compressDataUrlToBlob(dataUrl) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const ratio = Math.min(1, PHOTO_MAX_DIM / Math.max(img.naturalWidth, img.naturalHeight));
+      const w = Math.round(img.naturalWidth * ratio);
+      const h = Math.round(img.naturalHeight * ratio);
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Compressie mislukt")), "image/jpeg", PHOTO_QUALITY);
+    };
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
 }
 
 // ============================================================
