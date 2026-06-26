@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Mijn Digitaal Kookboek, jouw eigen kookboek met AI als souschef</title>
-<meta name="description" content="Bewaar je eigen recepten, laat AI nieuwe bedenken in de stijl van je favoriete kok, en lees handgeschreven recepten zo van een foto in. Alles op een mooie plek, voor altijd." />
+<meta name="description" content="Bewaar al je recepten op een plek. Lees oma's briefje in met een foto, haal een recept van een website of YouTube, of laat AI iets bedenken in de stijl van je favoriete kok. Gratis starten." />
 <meta name="theme-color" content="#0a1530" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
@@ -98,12 +98,21 @@
   .foot-biz strong{color:var(--ink)}
   .foot-copy{margin-top:32px;padding-top:20px;border-top:1px solid var(--hairline);color:var(--steel)}
 
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .moment{background:var(--lavender)}
+  .moment-inner{text-align:center;max-width:720px;margin:0 auto}
+  .moment-inner .eyebrow{color:var(--primary);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 14px}
+  .moment-inner h2{font-size:32px;font-weight:700;color:var(--navy);letter-spacing:-0.5px;margin:0 0 14px}
+  .moment-inner p{font-size:18px;color:var(--slate);margin:0}
+  @media (max-width:900px){.grid4{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:520px){.grid4{grid-template-columns:1fr}}
+
   @media (max-width:780px){
     .hero{padding:48px 0 36px}
     .hero h1{font-size:34px}
     .hero p.lead{font-size:17px}
     section{padding:40px 0}
-    .section-head h2{font-size:26px}
+    .section-head h2,.moment-inner h2{font-size:26px}
     .grid3,.price-grid{grid-template-columns:1fr}
     .feature-list{grid-template-columns:1fr}
     .top .btn-ghost{padding:9px 16px}
@@ -124,7 +133,7 @@
     <div class="wrap">
       <span class="pill"><img src="assets/icon-garde.svg" alt="" /> met AI als souschef</span>
       <h1>Jouw eigen digitale kookboek</h1>
-      <p class="lead">Bewaar je eigen recepten, laat AI nieuwe bedenken in de stijl van je favoriete kok, en lees handgeschreven recepten zo van een foto in. Alles op een mooie plek, voor altijd.</p>
+      <p class="lead">Bewaar al je recepten op een plek. Lees oma's handgeschreven briefje in met een foto, haal een recept van een website of YouTube, of laat AI iets bedenken in de stijl van je favoriete kok. Voor altijd bewaard.</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="app.html">Maak je kookboek</a>
         <a class="btn btn-ghost" href="#werkt">Zo werkt het</a>
@@ -136,25 +145,40 @@
   <section id="werkt">
     <div class="wrap">
       <div class="section-head">
-        <h2>Drie manieren om een recept toe te voegen</h2>
-        <p>Of je nu zelf typt, AI laat meedenken, of een oude receptkaart inscant.</p>
+        <h2>Vier manieren om een recept toe te voegen</h2>
+        <p>Typ het zelf, laat AI meedenken, scan een oude receptkaart, of haal een recept van een link.</p>
       </div>
-      <div class="grid3">
+      <div class="grid4">
         <div class="card">
           <div class="card-icon tint-cream"><img src="assets/icon-cook.svg" alt="" /></div>
           <h3>Zelf invullen</h3>
-          <p>Typ je eigen recept in een helder formulier, met ingredienten, stappen en een foto. Altijd gratis.</p>
+          <p>Typ je recept in een helder formulier, met ingredienten, stappen en een foto. Altijd gratis.</p>
         </div>
         <div class="card">
           <div class="card-icon tint-mint"><img src="assets/icon-sparkle.svg" alt="" /></div>
           <h3>Met AI bedenken</h3>
-          <p>Vertel wat je in huis hebt of waar je zin in hebt en kies een kookstijl. Via een formulier of gewoon in een gesprek.</p>
+          <p>Vertel wat je in huis hebt en kies een kookstijl. Via een formulier of gewoon in een gesprek.</p>
         </div>
         <div class="card">
           <div class="card-icon tint-lavender"><img src="assets/icon-camera.svg" alt="" /></div>
           <h3>Uit een foto inlezen</h3>
-          <p>Maak een foto van een handgeschreven of gedrukt recept en je kookboek zet het netjes voor je om.</p>
+          <p>Maak een foto van een handgeschreven of gedrukt recept en het komt er netjes in te staan.</p>
         </div>
+        <div class="card">
+          <div class="card-icon tint-sky"><img src="assets/icon-link.svg" alt="" /></div>
+          <h3>Vanaf een link</h3>
+          <p>Plak een link van een receptsite of YouTube. Het recept en de foto komen automatisch mee.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="moment">
+    <div class="wrap">
+      <div class="moment-inner">
+        <p class="eyebrow">Het magische moment</p>
+        <h2>Oma's recept, voor altijd bewaard</h2>
+        <p>Dat vergeelde briefje in haar handschrift, ergens in een laatje. Maak er een foto van en het staat meteen netjes in je kookboek. Doorzoekbaar, deelbaar, en nooit meer kwijt.</p>
       </div>
     </div>
   </section>
@@ -166,8 +190,10 @@
         <p>Eenvoudig, persoonlijk en altijd binnen handbereik.</p>
       </div>
       <div class="feature-list">
-        <div class="feature"><span class="dot">&check;</span><span>Je recepten veilig in de cloud, op al je apparaten</span></div>
-        <div class="feature"><span class="dot">&check;</span><span>33 kookstijlen van bekende koks om uit te kiezen</span></div>
+        <div class="feature"><span class="dot">&check;</span><span>Recept van een website of YouTube inlezen, met foto</span></div>
+        <div class="feature"><span class="dot">&check;</span><span>Een bier en wijntip bij elk recept</span></div>
+        <div class="feature"><span class="dot">&check;</span><span>Meer dan 35 kookstijlen van bekende koks</span></div>
+        <div class="feature"><span class="dot">&check;</span><span>Zoeken op alles, van ingredient tot drinktip</span></div>
         <div class="feature"><span class="dot">&check;</span><span>Voedingswaarden per portie</span></div>
         <div class="feature"><span class="dot">&check;</span><span>Boodschappenlijst per recept</span></div>
         <div class="feature"><span class="dot">&check;</span><span>Sterren en persoonlijke notities bij je recepten</span></div>
@@ -207,6 +233,8 @@
         <div class="row"><span>Eigen foto bij een recept toevoegen</span><span>gratis</span></div>
         <div class="row"><span>AI recept bedenken</span><span>1 credit</span></div>
         <div class="row"><span>Recept uit foto inlezen</span><span>1 credit</span></div>
+        <div class="row"><span>Recept uit een link inlezen</span><span>1 credit</span></div>
+        <div class="row"><span>Bier en wijntip via AI</span><span>1 credit</span></div>
         <div class="row"><span>Mooie AI foto bij een recept (optioneel)</span><span>5 credits</span></div>
         <div class="row"><span>Voedingswaarden berekenen</span><span>1 credit</span></div>
         <div class="row"><span>Boodschappenlijst toevoegen</span><span>gratis</span></div>
@@ -220,8 +248,8 @@
 
   <section class="cta">
     <div class="wrap">
-      <h2>Begin vandaag met jouw kookboek</h2>
-      <p>Gratis starten, met 10 credits en 5 recepten cadeau.</p>
+      <h2>Jouw recepten verdienen een mooie plek</h2>
+      <p>Begin vandaag gratis, met 10 credits en 5 recepten cadeau. Geen abonnement.</p>
       <a class="btn btn-primary" href="app.html">Maak je kookboek</a>
     </div>
   </section>
